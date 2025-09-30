@@ -11,6 +11,7 @@ Please push to GitHub an html document or a PDF (knitted/rendered from an Rmd or
 >Write out your roles and responsibilities. In a meeting, define these using the "prompts to help define roles and responsibilities within your team" below.
 
 We'll share the responsibilities for asking questions and last person who makes the edit will submit the assignment and let other know. We will communicate who does what based on the milestone of the role
+We will delegate specific tasks based on each milestone's deliverables. 
 
 >Team's preferred communication method 
    
