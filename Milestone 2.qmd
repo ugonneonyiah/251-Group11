@@ -4,23 +4,43 @@ format: pdf
 editor: visual
 ---
 
-## Quarto
+Description of dataset:
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+What is the data source? (1-2 sentences on where the data is coming from, dates included, etc.)
+How does the dataset relate to the group problem statement and question?
 
-## Running Code
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
-1 + 1
+
+install.packages("readxl")
+library(readxl)
+
+ces_datadictionary <- read_excel("~/PHW251_2025/251-Group11/calenviroscreen_datadictionary.xlsx")
+  
+head(ces_datadictionary)
 ```
 
 You can add options to executable code like this
 
 ```{r}
-#| echo: false
-2 * 2
+ces_measures <- read.csv("~/PHW251_2025/251-Group11/calenviroscreen_measures_2021.csv")
+
+head(ces_measures)
 ```
 
 The `echo: false` option disables the printing of code (only output is displayed).
+
+```{r}
+ces_scores_demog <- read.csv("~/PHW251_2025/251-Group11/calenviroscreen_scores_demog_2021.csv")
+head(ces_scores_demog)
+```
+```{r}
+chhs_asthma_ed <- read.csv("~/PHW251_2025/251-Group11/chhs_asthma_ed.csv")
+
+head(chhs_asthma_ed)
+```
+```{r}
+
+```
+
