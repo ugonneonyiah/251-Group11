@@ -10,33 +10,21 @@ install.packages("readxl")
 library(readxl)
 library(janitor)
 library(dplyr)
-
-
+library(readr)
 ```
-
 
 Description of dataset:
 
-What is the data source? (1-2 sentences on where the data is coming from, dates included, etc.)
-How does the dataset relate to the group problem statement and question?
+What is the data source? (1-2 sentences on where the data is coming from, dates included, etc.) How does the dataset relate to the group problem statement and question?
 
+5 columns - chhs_asthma_ed: county, ED visit rate (and \# ED visits?) - ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden.
 
-5 columns 
-- chhs_asthma_ed: county, ED visit rate (and # ED visits?)
-- ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden. 
-
-
-Questions: 
-- in ces_measures, what does the asthma percentile column represent? numbers seem high to be a rate of the general population. 
-- also in ces_measures, what the different census tracts mean, and can/should we combine into just county-specific numbers, should we use the mean?  
+Questions: - in ces_measures, what does the asthma percentile column represent? numbers seem high to be a rate of the general population. - also in ces_measures, what the different census tracts mean, and can/should we combine into just county-specific numbers, should we use the mean?\
 - do any columns need to be converted to a different type?
 
-cleaning: 
-- NA values from ces_measures: asthma, number_of_ed_visits, poverty  Replace with 0, "Unknown", or median(df$column1, na.rm = TRUE) depending on context.
+cleaning: - NA values from ces_measures: asthma, number_of_ed_visits, poverty Replace with 0, "Unknown", or median(df\$column1, na.rm = TRUE) depending on context.
 
-Data elements that need to be converted to a different type
-Data elements that need cleaning or re-categorization
-Data elements that may be used for future joins (i.e. state, county)
+Data elements that need to be converted to a different type Data elements that need cleaning or re-categorization Data elements that may be used for future joins (i.e. state, county)
 
 ```{r}
 
@@ -85,11 +73,9 @@ summary(ces_measures$pm2_5)
 summary(ces_measures$pollution_burden_score)
 ```
 
-
 ```{r}
 summary(chhs_asthma_ed$number_of_ed_visits)
 ```
-
 
 The `echo: false` option disables the printing of code (only output is displayed).
 
@@ -100,6 +86,7 @@ ces_scores_demog <- clean_names(ces_scores_demog)
 
 head(ces_scores_demog)
 ```
+
 ```{r}
 chhs_asthma_ed <- read.csv("~/PHW251_2025/251-Group11/chhs_asthma_ed.csv")
 
@@ -109,7 +96,7 @@ str(chhs_asthma_ed%>% select(county, number_of_ed_visits, age_adjusted_ed_visit_
 
 head(chhs_asthma_ed)
 ```
+
 ```{r}
 
 ```
-
