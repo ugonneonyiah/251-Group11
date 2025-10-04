@@ -1,5 +1,5 @@
 ---
-title: "Milestone 2"
+title: "Milestone 2, Group 11"
 format: pdf
 editor: visual
 ---
@@ -18,14 +18,14 @@ Description of dataset:
 
 What is the data source? (1-2 sentences on where the data is coming from, dates included, etc.) How does the dataset relate to the group problem statement and question?
 
+
 5 columns - chhs_asthma_ed: county, ED visit rate (and \# ED visits?) - ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden.
 
-Questions: - in ces_measures, what does the asthma percentile column represent? numbers seem high to be a rate of the general population. - also in ces_measures, what the different census tracts mean, and can/should we combine into just county-specific numbers, should we use the mean?\
-- do any columns need to be converted to a different type?
+Questions: - in ces_measures, what does the asthma percentile column represent? numbers seem high to be a rate of the general population. 
 
-cleaning: - NA values from ces_measures: asthma, number_of_ed_visits, poverty Replace with 0, "Unknown", or median(df\$column1, na.rm = TRUE) depending on context.
+cleaning: - NA values from ces_measures: asthma, number_of_ed_visits, poverty: We will replace with 0, "Unknown", or median(df\$column1, na.rm = TRUE) depending on context.
 
-Data elements that need to be converted to a different type Data elements that need cleaning or re-categorization Data elements that may be used for future joins (i.e. state, county)
+We changed the census_tract column of the ces_measures to character to account for any leading zeros. 
 
 ```{r}
 
@@ -39,13 +39,18 @@ You can add options to executable code like this
 ```{r}
 ces_measures <- read.csv("~/PHW251_2025/251-Group11/calenviroscreen_measures_2021.csv")
 
-ces_measures <- clean_names(ces_measures)
+ces_measures <- clean_names(ces_measures) 
+
+ces_measures <- ces_measures %>% mutate(census_tract = as.character(census_tract))
 
 #this is to show the type of each element
 str(ces_measures%>% select(california_county, asthma, pollution_burden_score, pm2_5, diesel_pm, poverty))
 
 head(ces_measures)
 ```
+
+
+
 
 ```{r}
 #showing the summary statistics
@@ -74,9 +79,6 @@ summary(ces_measures$pm2_5)
 summary(ces_measures$pollution_burden_score)
 ```
 
-```{r}
-summary(chhs_asthma_ed$number_of_ed_visits)
-```
 
 The `echo: false` option disables the printing of code (only output is displayed).
 
@@ -99,5 +101,5 @@ head(chhs_asthma_ed)
 ```
 
 ```{r}
-
+summary(chhs_asthma_ed$number_of_ed_visits)
 ```
