@@ -18,14 +18,15 @@ Description of dataset:
 
 What is the data source? (1-2 sentences on where the data is coming from, dates included, etc.) How does the dataset relate to the group problem statement and question?
 
+> The data comes from CalEnviroScreen 4.0 (2021) by California’s Office of Environmental Health Hazard Assessment (OEHHA) and the California Department of Health Care Access and Information (HCAI), which provides county-level asthma emergency department visit rates from 2016–2021. These datasets would help us explore how environmental burdens across California counties relate to asthma outcomes and identify which areas could benefit from targeted interventions that could make the biggest impact.
 
-5 columns - chhs_asthma_ed: county, ED visit rate (and \# ED visits?) - ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden.
+> 5 columns - chhs_asthma_ed: county, ED visit rate (and \# ED visits?) - ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden.
 
-Questions: - in ces_measures, what does the asthma percentile column represent? numbers seem high to be a rate of the general population. 
+> Questions we have: - in ces_measures, what does the asthma percentile column represent? numbers seem high to be a rate of the general population.
 
-cleaning: - NA values from ces_measures: asthma, number_of_ed_visits, poverty: We will replace with 0, "Unknown", or median(df\$column1, na.rm = TRUE) depending on context.
-
-We changed the census_tract column of the ces_measures to character to account for any leading zeros. 
+> cleaning: - NA values from ces_measures: asthma, number_of_ed_visits, poverty: We will replace with 0, "Unknown", or median(df\$column1, na.rm = TRUE) depending on context.
+>
+> We changed the census_tract column of the ces_measures to character to account for any leading zeros.
 
 ```{r}
 
@@ -48,9 +49,6 @@ str(ces_measures%>% select(california_county, asthma, pollution_burden_score, pm
 
 head(ces_measures)
 ```
-
-
-
 
 ```{r}
 #showing the summary statistics
@@ -78,7 +76,6 @@ summary(ces_measures$pm2_5)
 ```{r}
 summary(ces_measures$pollution_burden_score)
 ```
-
 
 The `echo: false` option disables the printing of code (only output is displayed).
 
