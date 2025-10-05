@@ -20,9 +20,13 @@ What is the data source? (1-2 sentences on where the data is coming from, dates 
 
 > The data comes from CalEnviroScreen 4.0 (2021) by California’s Office of Environmental Health Hazard Assessment (OEHHA) and the California Department of Health Care Access and Information (HCAI), which provides county-level asthma emergency department visit rates from 2016–2021. These datasets would help us explore how environmental burdens across California counties relate to asthma outcomes and identify which areas could benefit from targeted interventions that could make the biggest impact.
 
+Identify data types for 5+ data elements/columns/variables:
+
 > 5 columns - chhs_asthma_ed: county, ED visit rate (and \# ED visits?) - ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden.
 
 > Questions we have: - in ces_measures, what does the asthma percentile column represent? numbers seem high to be a rate of the general population.
+
+Describe cleaning that each data source may need
 
 > cleaning: - NA values from ces_measures: asthma, number_of_ed_visits, poverty: We will replace with 0, "Unknown", or median(df\$column1, na.rm = TRUE) depending on context.
 >
