@@ -4,6 +4,112 @@ format: pdf
 editor: visual
 ---
 
+#### **For Scenario 3: Environment and asthma in California** 
+
+In order to prepare each dataset for analysis (milestone #3), you will be expected to:
+
+-   Cal Enviro Screen datasets
+
+    -   Recode common variable(s) to be combined with other datasets 
+
+    -   Identify environmental measure(s) of interest and summarize into a county-level value
+
+    -   Summarize CalEnviroScreen score into a county level variable
+
+    -   NOTE: the methods for each summary variable (environmental measure and  CalEnviroScreen score) should be different (i.e. if you calculate the mean for one, please use another method for the other). If you look at more than one environmental measure you can re-use summarization methods for this. 
+
+-   Asthma ED dataset
+
+    -   Recode common variable(s) to be combined with other datasets 
+
+    -   Recode values that are reading in incorrectly
+
+    -   Subset to most recent year and county level data
+
+    -   Select demographic strata of interest
+
+    -   Pivot table to only include one row per county
+
+For all scenarios, please turn in an html document created from an Rmd or Qmd with the following components:
+
+-   Subset rows or columns, as needed
+
+-   Create new variables needed for analysis (minimum 2)
+
+    -   New variables should be created based on existing columns; for example
+
+        -   Calculating a rate
+
+        -   Combining character strings
+
+        -   Aggregation
+
+-   Clean variables needed for analysis (minimum 2)
+
+    -   Examples
+
+        -   Recode invalid values
+
+        -   Handle missing data
+
+        -   Recode categories
+
+-   Data re-structured as needed (aggregated/summarized and/or pivoted)
+
+-   Data dictionary based on clean dataset (minimum 4 data elements), including:
+
+    -   Variable name
+
+    -   Data type
+
+    -   Description
+
+-   One or more tables with descriptive statistics for 4 data elements
+
+-   Html output that is professionally prepared for presentation
+
+    -   Only the necessary information is outputted (you should suppress, for example, entire data frame outputs)
+
+    -   Use of headers and sub headers to create an organized document
+
+**Milestone 3 Rubric**
+
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+|                                                                                                                  |                     | Milestone 3 Rubric |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| Criteria                                                                                                         | Ratings             | Pts                |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeSubset rows or columns as needed                                   | **2 ptsFull Marks** | 2 pts\             |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeCreate new variables needed for analysis (minimum 2)               | **3 ptsFull Marks** | 3 pts\             |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeClean variables needed for analysis (minimum 2)                    | **3 ptsFull Marks** | 3 pts\             |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeRestructure datasets, as needed                                    | **2 ptsFull Marks** | 2 pts\             |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeData dictionary based on clean dataset (minimum 4 data elements)   | **4 ptsFull Marks** | 4 pts\             |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeOne or more tables with descriptive statistics for 4 data elements | **4 ptsFull Marks** | 4 pts\             |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeHTML document that is professionally prepared for presentation     | **2 ptsFull Marks** | 2 pts\             |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+
+Total Points: 20
+
 ## Quarto
 
 Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
