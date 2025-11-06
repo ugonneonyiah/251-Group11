@@ -6,6 +6,26 @@ editor: visual
 
 #### **For Scenario 3: Environment and asthma in California** 
 
+```{r}
+library(readxl)
+library(janitor)
+library(dplyr)
+library(readr)
+library(tidyverse)
+
+ces_datadictionary <- read_excel("~/PHW251_2025/251-Group11/calenviroscreen_datadictionary.xlsx")
+  
+head(ces_datadictionary)
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
 In order to prepare each dataset for analysis (milestone #3), you will be expected to:
 
 -   Cal Enviro Screen datasets
