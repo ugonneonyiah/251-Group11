@@ -1,0 +1,226 @@
+---
+title: "Milestone 2, Group 11"
+format: pdf
+editor: visual
+---
+
+```{r}
+
+#install.packages("readxl")
+library(readxl)
+library(janitor)
+library(dplyr)
+library(readr)
+library(tidyverse)
+```
+
+Description of dataset:
+
+What is the data source? (1-2 sentences on where the data is coming from, dates included, etc.) How does the dataset relate to the group problem statement and question?
+
+> The data comes from CalEnviroScreen 4.0 (2021) by California’s Office of Environmental Health Hazard Assessment (OEHHA) and the California Department of Health Care Access and Information (HCAI), which provides county-level asthma emergency department visit rates from 2016–2021. These datasets would help us explore how environmental burdens across California counties relate to asthma outcomes and identify which areas could benefit from targeted interventions that could make the biggest impact.
+
+Identify data types for 5+ data elements/columns/variables:
+
+> 5 columns - chhs_asthma_ed: county, ED visit rate (and \# ED visits?) - ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden.
+
+> Questions we have: - in ces_measures, what does the asthma percentile column represent? numbers seem high to be a rate of the general population.
+
+Describe cleaning that each data source may need
+
+> cleaning: - NA values from ces_measures: asthma, number_of_ed_visits, poverty: We will replace with 0, "Unknown", or median(df\$column1, na.rm = TRUE) depending on context.
+>
+> We changed the census_tract column of the ces_measures to character to account for any leading zeros.
+
+```{r}
+
+ces_datadictionary <- read_excel("~/PHW251_2025/251-Group11/calenviroscreen_datadictionary.xlsx")
+  
+head(ces_datadictionary)
+```
+
+You can add options to executable code like this
+
+```{r}
+ces_measures <- read.csv("~/PHW251_2025/251-Group11/calenviroscreen_measures_2021.csv")
+
+ces_measures <- clean_names(ces_measures) 
+
+ces_measures <- ces_measures %>% mutate(census_tract = as.character(census_tract))
+
+#this is to show the type of each element
+str(ces_measures%>% select(california_county, asthma, pollution_burden_score, pm2_5, diesel_pm, poverty))
+
+head(ces_measures)
+```
+
+```{r}
+#showing the summary statistics
+summary(ces_measures$asthma)
+
+```
+
+```{r}
+
+unique(ces_measures$california_county)
+```
+
+```{r}
+summary(ces_measures$poverty)
+```
+
+```{r}
+summary(ces_measures$diesel_pm)
+```
+
+```{r}
+summary(ces_measures$pm2_5)
+```
+
+```{r}
+summary(ces_measures$pollution_burden_score)
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+```{r}
+ces_scores_demog <- read.csv("~/PHW251_2025/251-Group11/calenviroscreen_scores_demog_2021.csv")
+
+ces_scores_demog <- clean_names(ces_scores_demog)
+
+head(ces_scores_demog)
+```
+
+```{r}
+chhs_asthma_ed <- read.csv("~/PHW251_2025/251-Group11/chhs_asthma_ed.csv")
+
+chhs_asthma_ed <- clean_names(chhs_asthma_ed)
+str(chhs_asthma_ed%>% select(county, number_of_ed_visits, age_adjusted_ed_visit_rate))
+
+
+head(chhs_asthma_ed)
+```
+
+```{r}
+summary(chhs_asthma_ed$number_of_ed_visits)
+```
+
+> 5 columns - chhs_asthma_ed: county, ED visit rate (and \# ED visits?) -
+>
+> ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden.
+
+**In order to prepare each dataset for analysis (milestone #3), you will be expected to:**
+
+-   **Cal Enviro Screen datasets**
+
+    -   **Recode common variable(s) to be combined with other datasets** 
+
+        -   this means make column names match?
+
+    -   **Identify environmental measure(s) of interest and summarize into a county-level value**
+
+        -   for indicators that are broken apart by census tract, combine into one county-level number, one row per county
+
+            -   we could do median of pm2.5, diesel.PM, poverty, pollution burden
+
+    -   **Summarize CalEnviroScreen score into a county level variable**
+
+        -   ces_scores_demog dataframe: ces_4_0_score column- combine into one row per county averaging all of the values.
+
+            -   one row per county, mean of all ces_4_0_score values.
+
+    -   **NOTE: the methods for each summary variable (environmental measure and  CalEnviroScreen score) should be different (i.e. if you calculate the mean for one, please use another method for the other). If you look at more than one environmental measure you can re-use summarization methods for this.** 
+
+-   Asthma ED dataset
+
+    -   Recode common variable(s) to be combined with other datasets 
+
+    -   Recode values that are reading in incorrectly
+
+    -   Subset to most recent year and county level data
+
+    -   Select demographic strata of interest
+
+    -   Pivot table to only include one row per county
+
+For all scenarios, please turn in an html document created from an Rmd or Qmd with the following components:
+
+-   Subset rows or columns, as needed
+
+-   Create new variables needed for analysis (minimum 2)
+
+    -   New variables should be created based on existing columns; for example
+
+        -   Calculating a rate
+
+        -   Combining character strings
+
+        -   Aggregation
+
+-   Clean variables needed for analysis (minimum 2)
+
+    -   Examples
+
+        -   Recode invalid values
+
+        -   Handle missing data
+
+        -   Recode categories
+
+-   Data re-structured as needed (aggregated/summarized and/or pivoted)
+
+-   Data dictionary based on clean dataset (minimum 4 data elements), including:
+
+    -   Variable name
+
+    -   Data type
+
+    -   Description
+
+-   One or more tables with descriptive statistics for 4 data elements
+
+-   Html output that is professionally prepared for presentation
+
+    -   Only the necessary information is outputted (you should suppress, for example, entire data frame outputs)
+
+    -   Use of headers and sub headers to create an organized document
+
+**Milestone 3 Rubric**
+
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+|                                                                                                                  |                     | Milestone 3 Rubric |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| Criteria                                                                                                         | Ratings             | Pts                |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeSubset rows or columns as needed                                   | **2 ptsFull Marks** | 2 pts              |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeCreate new variables needed for analysis (minimum 2)               | **3 ptsFull Marks** | 3 pts              |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeClean variables needed for analysis (minimum 2)                    | **3 ptsFull Marks** | 3 pts              |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeRestructure datasets, as needed                                    | **2 ptsFull Marks** | 2 pts              |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeData dictionary based on clean dataset (minimum 4 data elements)   | **4 ptsFull Marks** | 4 pts              |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeOne or more tables with descriptive statistics for 4 data elements | **4 ptsFull Marks** | 4 pts              |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning OutcomeHTML document that is professionally prepared for presentation     | **2 ptsFull Marks** | 2 pts              |
+|                                                                                                                  |                     |                    |
+|                                                                                                                  | **0 ptsNo Marks**   |                    |
++------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
+
+Total Points: 20
+
+Milestone #3 starts here
