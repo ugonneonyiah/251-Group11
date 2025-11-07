@@ -1,5 +1,5 @@
 ---
-title: "Milestone 2, Group 11"
+#title: "Milestone 2, Group 11"
 format: pdf
 editor: visual
 ---
@@ -131,17 +131,17 @@ summary(chhs_asthma_ed$number_of_ed_visits)
 
     -   **NOTE: the methods for each summary variable (environmental measure and  CalEnviroScreen score) should be different (i.e. if you calculate the mean for one, please use another method for the other). If you look at more than one environmental measure you can re-use summarization methods for this.** 
 
--   Asthma ED dataset
+-   Asthma ED dataset - Angela
 
-    -   Recode common variable(s) to be combined with other datasets 
+    -   Recode common variable(s) to be combined with other datasets\_ *done* 
 
-    -   Recode values that are reading in incorrectly
+    -   Recode values that are reading in incorrectly\_ *done*
 
-    -   Subset to most recent year and county level data
+    -   Subset to most recent year and county level data\_ *done*
 
-    -   Select demographic strata of interest
+    -   Select demographic strata of interest\_ *demographic strata of interest included was total population, so that we can more readily compare the numbers across data sets.*
 
-    -   Pivot table to only include one row per county
+    -   Pivot table to only include one row per county \_ *used other functions to create one row per county*.
 
 For all scenarios, please turn in an html document created from an Rmd or Qmd with the following components:
 
@@ -187,40 +187,53 @@ For all scenarios, please turn in an html document created from an Rmd or Qmd wi
 
 **Milestone 3 Rubric**
 
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
-|                                                                                                                  |                     | Milestone 3 Rubric |
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
-| Criteria                                                                                                         | Ratings             | Pts                |
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning OutcomeSubset rows or columns as needed                                   | **2 ptsFull Marks** | 2 pts              |
-|                                                                                                                  |                     |                    |
-|                                                                                                                  | **0 ptsNo Marks**   |                    |
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning OutcomeCreate new variables needed for analysis (minimum 2)               | **3 ptsFull Marks** | 3 pts              |
-|                                                                                                                  |                     |                    |
-|                                                                                                                  | **0 ptsNo Marks**   |                    |
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning OutcomeClean variables needed for analysis (minimum 2)                    | **3 ptsFull Marks** | 3 pts              |
-|                                                                                                                  |                     |                    |
-|                                                                                                                  | **0 ptsNo Marks**   |                    |
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning OutcomeRestructure datasets, as needed                                    | **2 ptsFull Marks** | 2 pts              |
-|                                                                                                                  |                     |                    |
-|                                                                                                                  | **0 ptsNo Marks**   |                    |
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning OutcomeData dictionary based on clean dataset (minimum 4 data elements)   | **4 ptsFull Marks** | 4 pts              |
-|                                                                                                                  |                     |                    |
-|                                                                                                                  | **0 ptsNo Marks**   |                    |
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning OutcomeOne or more tables with descriptive statistics for 4 data elements | **4 ptsFull Marks** | 4 pts              |
-|                                                                                                                  |                     |                    |
-|                                                                                                                  | **0 ptsNo Marks**   |                    |
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning OutcomeHTML document that is professionally prepared for presentation     | **2 ptsFull Marks** | 2 pts              |
-|                                                                                                                  |                     |                    |
-|                                                                                                                  | **0 ptsNo Marks**   |                    |
-+------------------------------------------------------------------------------------------------------------------+---------------------+--------------------+
++--------------------------------------------------------------------+---------------------+--------------------+
+|                                                                    |                     | Milestone 3 Rubric |
++--------------------------------------------------------------------+---------------------+--------------------+
+| Criteria                                                           | Ratings             | Pts                |
++--------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning Outcome                     | **2 ptsFull Marks** | 2 pts              |
+|                                                                    |                     |                    |
+| Subset rows or columns as needed                                   | **0 ptsNo Marks**   |                    |
++--------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning Outcome                     | **3 ptsFull Marks** | 3 pts              |
+|                                                                    |                     |                    |
+| Create new variables needed for analysis (minimum 2)               | **0 ptsNo Marks**   |                    |
++--------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning Outcome                     | **3 ptsFull Marks** | 3 pts              |
+|                                                                    |                     |                    |
+| Clean variables needed for analysis (minimum 2)                    | **0 ptsNo Marks**   |                    |
++--------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning Outcome                     | **2 ptsFull Marks** | 2 pts              |
+|                                                                    |                     |                    |
+| Restructure datasets, as needed                                    | **0 ptsNo Marks**   |                    |
++--------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning Outcome                     | **4 ptsFull Marks** | 4 pts              |
+|                                                                    |                     |                    |
+| Data dictionary based on clean dataset (minimum 4 data elements)   | **0 ptsNo Marks**   |                    |
++--------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning Outcome                     | **4 ptsFull Marks** | 4 pts              |
+|                                                                    |                     |                    |
+| One or more tables with descriptive statistics for 4 data elements | **0 ptsNo Marks**   |                    |
++--------------------------------------------------------------------+---------------------+--------------------+
+| This criterion is linked to a Learning Outcome                     | **2 ptsFull Marks** | 2 pts              |
+|                                                                    |                     |                    |
+| HTML document that is professionally prepared for presentation     | **0 ptsNo Marks**   |                    |
++--------------------------------------------------------------------+---------------------+--------------------+
 
 Total Points: 20
 
 Milestone #3 starts here
+
+```{r}
+
+df_asthma <- chhs_asthma_ed %>% 
+  filter(county != "CALIFORNIA") %>% 
+  filter(strata == "Total population") %>% 
+  filter(year == 2020) %>% 
+  select(county, year, number_of_ed_visits, age_adjusted_ed_visit_rate) %>%
+  mutate(county = str_to_title(county)) %>%     
+  mutate(county = paste0(county, " County")) %>%     
+  mutate(across(where(is.numeric), ~if_else(is.na(.), 0, .)))
+df_asthma
+```
