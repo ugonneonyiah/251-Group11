@@ -237,3 +237,36 @@ df_asthma <- chhs_asthma_ed %>%
   mutate(across(where(is.numeric), ~if_else(is.na(.), 0, .)))
 df_asthma
 ```
+
+```{r}
+#dineli environmental measures dataset clean up
+df_env_measures <- read_csv("calenviroscreen_measures_2021.csv", show_col_types = FALSE) %>%
+  clean_names() %>%
+  
+  # recode common variable(s) for combining with other datasets
+  mutate(county = str_to_title(california_county)) %>%
+  mutate(county = paste0(county, " County")) %>%
+  
+  # recode values that are reading incorrectly
+  mutate(across(where(is.numeric), ~na_if(., -999))) %>%
+  mutate(across(where(is.numeric), ~na_if(., -1))) %>%
+  
+  # identify and select environmental measures of interest
+  select(county, pm2_5, diesel_pm, poverty, traffic) %>%
+  
+  # group by county and summarize to one row per county (median)
+  group_by(county) %>%
+  summarise(
+    median_pm2_5 = median(pm2_5, na.rm = TRUE),
+    median_diesel_pm = median(diesel_pm, na.rm = TRUE),
+    median_poverty = median(poverty, na.rm = TRUE),
+    median_traffic = median(traffic, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  
+  # replace missing numeric values with 0 (to match your asthma dataset syntax)
+  mutate(across(where(is.numeric), ~if_else(is.na(.), 0, .)))
+
+df_env_measures 
+
+```
