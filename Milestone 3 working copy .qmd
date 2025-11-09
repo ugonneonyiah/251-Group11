@@ -225,10 +225,37 @@ Total Points: 20
 
 Milestone #3 starts here
 
+Data Dictionary
+
+|                   |                                                      |
+|-------------------|------------------------------------------------------|
+| California County | California county that the census tract falls within |
+
+|  |  |
+|----|----|
+| Mean CES 4.0 Score | Mean of CalEnviroScreen Score, Pollution Score multiplied by Population Characteristics Score |
+
+|              |                                     |
+|--------------|-------------------------------------|
+| Median PM2.5 | Annual median PM 2.5 concentrations |
+
+|  |  |
+|----|----|
+| Median Diesel PM | Annual median Diesel PM emissions from on-road and non-road sources |
+
++----------------+-----------------------------------------------------------------------------------------+
+| \              | Median Percent of population living below two times the federal poverty level by county |
+| Median Poverty |                                                                                         |
++----------------+-----------------------------------------------------------------------------------------+
+
+|  |  |
+|----|----|
+| Median Traffic | Median traffic density, in vehicle-kilometers per hour per road length, within 150 meters of the census tract boundary by county |
+
 Today is a new day
 
 ```{r}
-
+#angela asthma dataframe 
 df_asthma <- chhs_asthma_ed %>% 
   filter(county != "CALIFORNIA") %>% 
   filter(strata == "Total population") %>% 
@@ -303,5 +330,27 @@ df_env_measures <- read_csv("calenviroscreen_measures_2021.csv", show_col_types 
   mutate(across(where(is.numeric), ~if_else(is.na(.), 0, .)))
 
 df_env_measures 
+
+```
+
+```{r}
+
+#angela CES scores data frame
+
+df_scores <- ces_scores_demog %>%
+  group_by(county) %>%
+  summarise(mean_ces_4_0_score = mean(ces_4_0_score, na.rm = TRUE))
+
+df_scores
+
+```
+
+```{r}
+
+df_combined <- df_scores %>%
+  left_join(df_asthma, by = "county") %>%
+  left_join(df_env_measures, by = "county")
+
+df_combined
 
 ```
