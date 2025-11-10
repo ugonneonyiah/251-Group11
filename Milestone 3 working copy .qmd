@@ -231,26 +231,26 @@ Data Dictionary
 | California County | California county that the census tract falls within |
 +-------------------+------------------------------------------------------+
 
-+----------------------------------+-----------------------------------------------------------------------------------------------+
-| Mean CES 4.0 Score               | Mean of CalEnviroScreen Score, Pollution Score multiplied by Population Characteristics Score |
-+----------------------------------+-----------------------------------------------------------------------------------------------+
++--------------------+-----------------------------------------------------------------------------------------------+
+| Mean CES 4.0 Score | Mean of CalEnviroScreen Score, Pollution Score multiplied by Population Characteristics Score |
++--------------------+-----------------------------------------------------------------------------------------------+
 
 |              |                                     |
 |--------------|-------------------------------------|
 | Median PM2.5 | Annual median PM 2.5 concentrations |
 
-+----------------------------------+---------------------------------------------------------------------+
-| Median Diesel PM                 | Annual median Diesel PM emissions from on-road and non-road sources |
-+----------------------------------+---------------------------------------------------------------------+
++----------------------+---------------------------------------------------------------------+
+| Median Diesel PM     | Annual median Diesel PM emissions from on-road and non-road sources |
++----------------------+---------------------------------------------------------------------+
 
 +----------------+-----------------------------------------------------------------------------------------+
 | \              | Median Percent of population living below two times the federal poverty level by county |
 | Median Poverty |                                                                                         |
 +----------------+-----------------------------------------------------------------------------------------+
 
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
-| Median Traffic                   | Median traffic density, in vehicle-kilometers per hour per road length, within 150 meters of the census tract boundary by county |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
++----------------+----------------------------------------------------------------------------------------------------------------------------------+
+| Median Traffic | Median traffic density, in vehicle-kilometers per hour per road length, within 150 meters of the census tract boundary by county |
++----------------+----------------------------------------------------------------------------------------------------------------------------------+
 
 ## Cleaning /Creating New Variables in Dataframes
 
@@ -362,6 +362,7 @@ df_combined %>%
 
 ```{r}
 #Data Dictionary
+
 library(gt)
 
 data_dictionary <- tibble::tibble(
@@ -371,16 +372,24 @@ data_dictionary <- tibble::tibble(
     "median_pm2_5",
     "median_diesel_pm",
     "median_poverty",
-    "median_traffic"
+    "median_traffic",
+    "number_of_ed_visits",
+    "ed_visits_per_100k"
   ),
-  type = c("character","numeric","numeric","numeric","numeric","numeric"),
+  type = c(
+    "character",
+    "numeric","numeric","numeric","numeric","numeric",
+    "numeric","numeric"
+  ),
   description = c(
-    "California county.",
-    "Mean CalEnviroScreen 4.0 score (Pollution Burden × Population Characteristics, tract → county mean).",
-    "Annual median PM2.5 concentration (tract → county median).",
-    "Annual median Diesel PM index from on-/off-road sources (tract → county median).",
-    "Median % of population below 2× federal poverty level (tract → county median).",
-    "Median traffic density (veh-km/hour per road length within 150m of tract), tract → county median."
+    "County name.",
+    "County mean of tract-level CalEnviroScreen 4.0 score (CES score = Pollution Burden × Population Characteristics).",
+    "County median of tract-level annual average PM2.5 (µg/m³).",
+    "County median of tract-level Diesel PM concentration surrogate/index (from on- and off-road sources).",
+    "County median of tract-level percent of residents below 200% of the federal poverty level.",
+    "County median of tract-level traffic density (vehicle-km per hour per road length) within 150 m of tract boundary.",
+    "Total asthma-related ED visits (count) for the selected year (e.g., 2020), Total population, All ages.",
+    "Derived rate = (number_of_ed_visits / total_population) × 100,000; NA if population not available."
   )
 )
 
