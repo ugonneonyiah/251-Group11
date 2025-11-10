@@ -223,40 +223,41 @@ For all scenarios, please turn in an html document created from an Rmd or Qmd wi
 
 Total Points: 20
 
-Milestone #3 starts here
+# **Milestone #3 starts here**
 
 Data Dictionary
 
-|                   |                                                      |
-|-------------------|------------------------------------------------------|
++-------------------+------------------------------------------------------+
 | California County | California county that the census tract falls within |
++-------------------+------------------------------------------------------+
 
-|  |  |
-|----|----|
-| Mean CES 4.0 Score | Mean of CalEnviroScreen Score, Pollution Score multiplied by Population Characteristics Score |
++-----------------------------------+-----------------------------------------------------------------------------------------------+
+| Mean CES 4.0 Score                | Mean of CalEnviroScreen Score, Pollution Score multiplied by Population Characteristics Score |
++-----------------------------------+-----------------------------------------------------------------------------------------------+
 
 |              |                                     |
 |--------------|-------------------------------------|
 | Median PM2.5 | Annual median PM 2.5 concentrations |
 
-|  |  |
-|----|----|
-| Median Diesel PM | Annual median Diesel PM emissions from on-road and non-road sources |
++-----------------------------------+---------------------------------------------------------------------+
+| Median Diesel PM                  | Annual median Diesel PM emissions from on-road and non-road sources |
++-----------------------------------+---------------------------------------------------------------------+
 
 +----------------+-----------------------------------------------------------------------------------------+
 | \              | Median Percent of population living below two times the federal poverty level by county |
 | Median Poverty |                                                                                         |
 +----------------+-----------------------------------------------------------------------------------------+
 
-|  |  |
-|----|----|
-| Median Traffic | Median traffic density, in vehicle-kilometers per hour per road length, within 150 meters of the census tract boundary by county |
++-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| Median Traffic                    | Median traffic density, in vehicle-kilometers per hour per road length, within 150 meters of the census tract boundary by county |
++-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
 
-Today is a new day
+## Cleaning /Creating Dataframes
 
 ```{r}
 #angela asthma dataframe 
 df_asthma <- chhs_asthma_ed %>% 
+  clean_names() %>%
   filter(county != "CALIFORNIA") %>% 
   filter(strata == "Total population") %>% 
   filter(year == 2020) %>% 
@@ -300,37 +301,7 @@ df_env_measures
 
 ```
 
-```{r}
-#dineli environmental measures dataset clean up
-df_env_measures <- read_csv("calenviroscreen_measures_2021.csv", show_col_types = FALSE) %>%
-  clean_names() %>%
-  
-  # recode common variable(s) for combining with other datasets
-  mutate(county = str_to_title(california_county)) %>%
-  mutate(county = paste0(county, " County")) %>%
-  
-  # recode values that are reading incorrectly
-  mutate(across(where(is.numeric), ~na_if(., -999))) %>%
-  mutate(across(where(is.numeric), ~na_if(., -1))) %>%
-  
-  # identify and select environmental measures of interest
-  select(county, pm2_5, diesel_pm, poverty, traffic) %>%
-  
-  # group by county and summarize to one row per county (median)
-  group_by(county) %>%
-  summarise(
-    median_pm2_5 = median(pm2_5, na.rm = TRUE),
-    median_diesel_pm = median(diesel_pm, na.rm = TRUE),
-    median_poverty = median(poverty, na.rm = TRUE),
-    median_traffic = median(traffic, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  
-  # replace missing numeric values with 0 (to match your asthma dataset syntax)
-  mutate(across(where(is.numeric), ~if_else(is.na(.), 0, .)))
-
-df_env_measures 
-
+```         
 ```
 
 ```{r}
@@ -345,6 +316,8 @@ df_scores
 
 ```
 
+## Combine Dataframes and Create a Table for HTML Output
+
 ```{r}
 
 df_combined <- df_scores %>%
@@ -353,4 +326,59 @@ df_combined <- df_scores %>%
 
 df_combined
 
+```
+
+```{r}
+library(gt)
+#Create a clean table for html output
+df_combined %>%
+  
+  gt() %>%
+  tab_header(
+    title = "Merged County-Level Dataset",
+    subtitle = "CalEnviroScreen Scores, Environmental Indicators, and Asthma ED Visits (2020)"
+  ) %>%
+  fmt_number(
+    columns = where(is.numeric),
+    decimals = 2
+  ) %>%
+  tab_options(
+    table.width = pct(100),
+    table.font.size = px(13)
+  )
+
+```
+
+```         
+```
+
+## Data Dictionary
+
+```{r}
+#Data Dictionary
+library(gt)
+
+data_dictionary <- tibble::tibble(
+  variable = c(
+    "county",
+    "mean_ces_4_0_score",
+    "median_pm2_5",
+    "median_diesel_pm",
+    "median_poverty",
+    "median_traffic"
+  ),
+  type = c("character","numeric","numeric","numeric","numeric","numeric"),
+  description = c(
+    "California county.",
+    "Mean CalEnviroScreen 4.0 score (Pollution Burden × Population Characteristics, tract → county mean).",
+    "Annual median PM2.5 concentration (tract → county median).",
+    "Annual median Diesel PM index from on-/off-road sources (tract → county median).",
+    "Median % of population below 2× federal poverty level (tract → county median).",
+    "Median traffic density (veh-km/hour per road length within 150m of tract), tract → county median."
+  )
+)
+
+data_dictionary %>%
+  gt() %>%
+  tab_header(title = "Data Dictionary — Clean County-Level Dataset")
 ```
