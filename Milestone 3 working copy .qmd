@@ -227,30 +227,30 @@ Total Points: 20
 
 Data Dictionary
 
-+-------------------+------------------------------------------------------+
+|                   |                                                      |
+|-------------------|------------------------------------------------------|
 | California County | California county that the census tract falls within |
-+-------------------+------------------------------------------------------+
 
-+-----------------------------------+-----------------------------------------------------------------------------------------------+
-| Mean CES 4.0 Score                | Mean of CalEnviroScreen Score, Pollution Score multiplied by Population Characteristics Score |
-+-----------------------------------+-----------------------------------------------------------------------------------------------+
+|  |  |
+|----|----|
+| Mean CES 4.0 Score | Mean of CalEnviroScreen Score, Pollution Score multiplied by Population Characteristics Score |
 
 |              |                                     |
 |--------------|-------------------------------------|
 | Median PM2.5 | Annual median PM 2.5 concentrations |
 
-+-----------------------------------+---------------------------------------------------------------------+
-| Median Diesel PM                  | Annual median Diesel PM emissions from on-road and non-road sources |
-+-----------------------------------+---------------------------------------------------------------------+
+|  |  |
+|----|----|
+| Median Diesel PM | Annual median Diesel PM emissions from on-road and non-road sources |
 
 +----------------+-----------------------------------------------------------------------------------------+
 | \              | Median Percent of population living below two times the federal poverty level by county |
 | Median Poverty |                                                                                         |
 +----------------+-----------------------------------------------------------------------------------------+
 
-+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
-| Median Traffic                    | Median traffic density, in vehicle-kilometers per hour per road length, within 150 meters of the census tract boundary by county |
-+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|  |  |
+|----|----|
+| Median Traffic | Median traffic density, in vehicle-kilometers per hour per road length, within 150 meters of the census tract boundary by county |
 
 ## Cleaning /Creating New Variables in Dataframes
 
@@ -316,7 +316,7 @@ df_scores
 
 ```
 
-## Combine Dataframes and Re-Structured 
+## Combine Dataframes and Re-Structured
 
 ```{r}
 
