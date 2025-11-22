@@ -1,0 +1,473 @@
+---
+#title: "Milestone 2, Group 11"
+format: pdf
+editor: visual
+---
+
+```{r include=FALSE, message=FALSE, warning=FALSE}
+
+#install.packages("readxl")
+library(readxl)
+library(janitor)
+library(dplyr)
+library(knitr)
+library(readr)
+library(tidyverse)
+#install.packages("tinytex")
+#tinytex::install_tinytex()
+library(gt)
+```
+
+```{r, include=FALSE}
+
+ces_datadictionary <- read_excel("~/PHW251_2025/251-Group11/calenviroscreen_datadictionary.xlsx")
+  
+head(ces_datadictionary)
+```
+
+```{r, include=FALSE}
+ces_measures <- read.csv("~/PHW251_2025/251-Group11/calenviroscreen_measures_2021.csv")
+
+ces_measures <- clean_names(ces_measures) 
+
+ces_measures <- ces_measures %>% mutate(census_tract = as.character(census_tract))
+
+#this is to show the type of each element
+str(ces_measures%>% select(california_county, asthma, pollution_burden_score, pm2_5, diesel_pm, poverty))
+
+head(ces_measures)
+```
+
+```{r, include=FALSE}
+#showing the summary statistics
+summary(ces_measures$asthma)
+
+```
+
+```{r, include=FALSE}
+
+unique(ces_measures$california_county)
+```
+
+```{r, include=FALSE}
+summary(ces_measures$poverty)
+```
+
+```{r, include=FALSE}
+summary(ces_measures$diesel_pm)
+```
+
+```{r, include=FALSE}
+summary(ces_measures$pm2_5)
+```
+
+```{r, include=FALSE}
+summary(ces_measures$pollution_burden_score)
+```
+
+```{r, include=FALSE}
+ces_scores_demog <- read.csv("~/PHW251_2025/251-Group11/calenviroscreen_scores_demog_2021.csv")
+
+ces_scores_demog <- clean_names(ces_scores_demog)
+
+head(ces_scores_demog)
+```
+
+```{r, include=FALSE}
+chhs_asthma_ed <- read.csv("~/PHW251_2025/251-Group11/chhs_asthma_ed.csv")
+
+chhs_asthma_ed <- clean_names(chhs_asthma_ed)
+str(chhs_asthma_ed%>% select(county, number_of_ed_visits, age_adjusted_ed_visit_rate))
+
+
+head(chhs_asthma_ed)
+```
+
+```{r, include=FALSE}
+summary(chhs_asthma_ed$number_of_ed_visits)
+```
+
+
+
+|     |
+|-----|
+|     |
+
+|     |     |
+|-----|-----|
+|     |     |
+
+
+
+```{r, include=FALSE}
+#angela asthma dataframe 
+df_asthma <- chhs_asthma_ed %>% 
+  clean_names() %>%
+  filter(county != "CALIFORNIA") %>% 
+  filter(strata == "Total population") %>% 
+  filter(year == 2020) %>% 
+  select(county, year, number_of_ed_visits, age_adjusted_ed_visit_rate) %>%
+  mutate(county = str_to_title(county)) %>%     
+  mutate(county = paste0(county, " County")) %>%     
+  mutate(across(where(is.numeric), ~if_else(is.na(.), 0, .)))
+df_asthma
+```
+
+```{r, include=FALSE}
+#dineli environmental measures dataset clean up
+df_env_measures <- read_csv("calenviroscreen_measures_2021.csv", show_col_types = FALSE) %>%
+  clean_names() %>%
+  
+  # recode common variable(s) for combining with other datasets
+  mutate(county = str_to_title(california_county)) %>%
+  mutate(county = paste0(county, " County")) %>%
+  
+  # recode values that are reading incorrectly
+  mutate(across(where(is.numeric), ~na_if(., -999))) %>%
+  mutate(across(where(is.numeric), ~na_if(., -1))) %>%
+  
+  # identify and select environmental measures of interest
+  select(county, pm2_5, diesel_pm, poverty, traffic) %>%
+  
+  # group by county and summarize to one row per county (median)
+  group_by(county) %>%
+  summarise(
+    median_pm2_5 = median(pm2_5, na.rm = TRUE),
+    median_diesel_pm = median(diesel_pm, na.rm = TRUE),
+    median_poverty = median(poverty, na.rm = TRUE),
+    median_traffic = median(traffic, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  
+  # replace missing numeric values with 0 (to match your asthma dataset syntax)
+  mutate(across(where(is.numeric), ~if_else(is.na(.), 0, .)))
+
+df_env_measures 
+
+```
+
+
+
+```         
+```
+
+
+
+```{r, include=FALSE}
+
+#angela CES scores data frame
+
+df_scores <- ces_scores_demog %>%
+  group_by(county) %>%
+  summarise(
+    mean_ces_4_0_score = mean(ces_4_0_score, na.rm = TRUE),
+    total_population = sum(total_population, na.rm = TRUE),
+    .groups = "drop"
+  )
+df_scores
+
+```
+
+
+
+## Combine Dataframes and Re-Structured
+
+
+
+```{r, include=FALSE}
+
+df_combined <- df_scores %>%
+  left_join(df_asthma, by = "county") %>%
+  left_join(df_env_measures, by = "county") %>%
+  mutate(ed_visits_per_100k = (number_of_ed_visits /total_population) * 100000)
+
+df_combined
+
+
+```
+
+
+
+## Data re-structured and summarized
+
+
+
+```{r, include=FALSE}
+df_combined %>%
+  dplyr::summarise(
+    n_counties = dplyr::n(),
+    pm25_med   = median(median_pm2_5, na.rm = TRUE),
+    diesel_med = median(median_diesel_pm, na.rm = TRUE),
+    poverty_med= median(median_poverty, na.rm = TRUE),
+    ces_mean   = mean(mean_ces_4_0_score, na.rm = TRUE),
+    asthma_rate_med = median(age_adjusted_ed_visit_rate, na.rm = TRUE)
+  ) %>%
+  gt() %>%
+  tab_header(title = "df_combined — Summary Statistics") %>%
+  fmt_number(columns = where(is.numeric), decimals = 2)
+
+```
+
+
+
+## Create a Table for HTML Output
+
+
+
+```{r, include=FALSE}
+library(gt)
+#Create a clean table for html output
+df_combined %>%
+  
+  gt() %>%
+  tab_header(
+    title = "Merged County-Level Dataset",
+    subtitle = "CalEnviroScreen Scores, Environmental Indicators, and Asthma ED Visits (2020)"
+  ) %>%
+  fmt_number(
+    columns = where(is.numeric),
+    decimals = 2
+  ) %>%
+  tab_options(
+    table.width = pct(100),
+    table.font.size = px(13)
+  )
+
+```
+
+
+
+```         
+```
+
+## Data Dictionary
+
+
+
+```{r, include=FALSE}
+#Data Dictionary
+
+library(gt)
+
+data_dictionary <- tibble::tibble(
+  variable = c(
+    "county",
+    "mean_ces_4_0_score",
+    "median_pm2_5",
+    "median_diesel_pm",
+    "median_poverty",
+    "median_traffic",
+    "number_of_ed_visits",
+    "ed_visits_per_100k"
+  ),
+  type = c(
+    "character",
+    "numeric","numeric","numeric","numeric","numeric",
+    "numeric","numeric"
+  ),
+  description = c(
+    "County name.",
+    "County mean of tract-level CalEnviroScreen 4.0 score (CES score = Pollution Burden × Population Characteristics).",
+    "County median of tract-level annual average PM2.5 (µg/m³).",
+    "County median of tract-level Diesel PM concentration surrogate/index (from on- and off-road sources).",
+    "County median of tract-level percent of residents below 200% of the federal poverty level.",
+    "County median of tract-level traffic density (vehicle-km per hour per road length) within 150 m of tract boundary.",
+    "Total asthma-related ED visits (count) for the selected year (e.g., 2020), Total population, All ages.",
+    "Derived rate = (number_of_ed_visits / total_population) × 100,000; NA if population not available."
+  )
+)
+
+data_dictionary %>%
+  gt() %>%
+  tab_header(title = "Data Dictionary — Clean County-Level Dataset")
+```
+
+
+
+MILESTONE 4 STARTS HERE\
+
+Please submit an Rmd or Qmd and publish an html file on RPubs with the following:
+
+1.  Final datasets for creation of visualization
+
+    -   Join all datasets together
+
+    -   Calculate any remaining data elements needed for analysis
+
+    -   Show code used to create joined dataset, but please do not print full data frame output (showing data structure with `str()` is okay)
+
+2.  Visualizations (at least one per group member)
+
+    -   One print quality table as requested in scenario
+
+    -   One print quality plot or chart as requested in scenario
+
+    -   For groups of 3, one additional print quality table or plot of your choice (can support the requested data in the scenario, or answer a different question using the same data sources)
+
+3.  For each visual, include
+
+    -   Code used to generate visual
+
+    -   Legend (if necessary)
+
+    -   1-2 sentence interpretation
+
+    -   NOTE:
+
+        -   Please make sure the visual can stand-alone, meaning it includes enough information in title, legend, and footnote so that a person who sees only the visualization could understand what is being presented.
+
+        -   Please also make sure column names, axis labels, and any other labels are meaningful and not just the name of the variable (ex: "County" rather than "county_name")
+
+4.  Html file that is professionally prepared for presentation and published to RPubs
+
+    -   Only the necessary information is in the output (e.g., suppress entire data frame outputs but showing data structure with `str()` is okay.
+
+    -   Code used to import and clean data (milestones 2 and 3) can be included in the rmd/qmd but please use the option include=FALSE in order to prevent the code and any output from. Code chunk would look like `{r chunk_name, include=FALSE}`{style="font-family: Monaco, Menlo, Consolas, \"Courier New\", monospace; font-size: 0.75rem; border-radius: 6px; background-color: rgb(242, 244, 244); border: 1px solid rgb(232, 234, 236); padding: 0.125rem 0.25rem; color: rgb(199, 31, 35);"}
+
+    -   Utilize `warning=FALSE`{style="font-family: Monaco, Menlo, Consolas, \"Courier New\", monospace; font-size: 0.75rem; border-radius: 6px; background-color: rgb(242, 244, 244); border: 1px solid rgb(232, 234, 236); padding: 0.125rem 0.25rem; color: rgb(199, 31, 35);"} and `message=FALSE`{style="font-family: Monaco, Menlo, Consolas, \"Courier New\", monospace; font-size: 0.75rem; border-radius: 6px; background-color: rgb(242, 244, 244); border: 1px solid rgb(232, 234, 236); padding: 0.125rem 0.25rem; color: rgb(199, 31, 35);"} to suppress any warnings/messages that may be displaying from any chunks
+
+    -   For this milestone please make sure code for visualizations are included in the final file. Show your work by "echoing" code used in Rmd/Qmd file to create your tables and graphs. \`\`\`{r, echo = TRUE} in code chunk preferences.
+
+    -   Use headers and sub headers to create an organized document
+
+    -   Make sure you commit and push your rsconnect folder! [Read more details here.Links to an external site.](https://docs.google.com/document/d/1JSg5JUEI3JDD_rPAlAaVPno0MlUGQ6W_cyBvn6Ud1xs/edit?usp=sharing)
+
+# Final datasets for creation of visualization
+
+
+
+```{r 1}
+df_combined <- df_combined %>%
+  mutate(
+   ces_category = case_when(
+      mean_ces_4_0_score < 20 ~ "Low",
+      mean_ces_4_0_score < 30 ~ "Moderate",
+      TRUE ~ "High"),
+    high_poverty = if_else(median_poverty > median(median_poverty), 
+                                "High poverty", "Low poverty"),
+    poverty_pollution_ratio = median_poverty / median_pm2_5
+  )
+```
+
+```{r Angela visual }
+
+ggplot(df_combined, aes(x = mean_ces_4_0_score,
+                        y = ed_visits_per_100k)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Relationship Between CalEnviroScreen Score and Asthma ED Visit Rates",
+    subtitle = "County-level scores and 2020 asthma emergency visit rates",
+    x = "Mean CalEnviroScreen 4.0 Score",
+    y = "ED Visit Rate (per 100,000)",
+    caption = "Data: OEHHA CalEnviroScreen 4.0 and HCAI Asthma ED Visits (2020)"
+  )
+
+
+```
+
+
+
+#### a) County-level summary table
+
+-   **Purpose:** Show key county metrics side by side for easy comparison.
+
+-   **Columns:**
+
+    -   County
+
+    -   Mean CES score
+
+    -   CES category
+
+    -   Median PM2.5
+
+    -   Median diesel PM
+
+    -   Median poverty
+
+    -   Asthma ED visit rate (age-adjusted)
+
+    -   ED visits per 100k
+
+-   **Interpretation:** Lets you see which counties have both high environmental exposure and high asthma rates. Could help prioritize intervention targets.
+
+-   **R example (using `kable` from `knitr` or `gt` for more polished tables):**
+
+
+
+```{r county level table}
+
+df_combined %>%
+  select(county, mean_ces_4_0_score, ces_category, median_pm2_5, median_diesel_pm, median_poverty, age_adjusted_ed_visit_rate) %>%
+  arrange(desc(age_adjusted_ed_visit_rate)) %>%
+  kable(caption = "County-level Environmental Measures and Asthma ED Rates (2020)")
+
+```
+
+
+
+b)  Stratified summary table Purpose: Compare asthma rates by poverty level or CES category. Example: Mean asthma ED rate by CES category:
+
+    Interpretation: Shows if high CES or high poverty counties tend to have higher asthma ED rates.
+
+
+
+```{r}
+df_combined %>%
+  group_by(ces_category) %>%
+  summarise(mean_ed_rate = mean(age_adjusted_ed_visit_rate, na.rm = TRUE),
+            mean_pm2_5 = mean(median_pm2_5, na.rm = TRUE),
+            mean_poverty = mean(median_poverty, na.rm = TRUE))
+
+```
+
+```{r}
+df_combined %>%
+  group_by(county, ces_category) %>%
+  summarise(mean_ed_rate = mean(age_adjusted_ed_visit_rate, na.rm = TRUE),
+            mean_pm2_5 = mean(median_pm2_5, na.rm = TRUE),
+            mean_poverty = mean(median_poverty, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(mean_ed_rate))
+```
+
+
+
+#### Boxplot of asthma ED rates by CES category
+
+-   **Purpose:** Visually compare distributions across “Low,” “Moderate,” and “High” CES counties.
+
+-   **Interpretation:** Highlights disparities in asthma rates across environmental burden categories.
+
+
+
+```{r}
+ggplot(df_combined, aes(x = ces_category, y = age_adjusted_ed_visit_rate, fill = ces_category)) +
+  geom_boxplot() +
+  labs(
+    title = "Distribution of Asthma ED Rates by CES Category",
+    x = "CES Category",
+    y = "Age-adjusted ED Visit Rate (per 100,000)",
+    caption = "Data: CalEnviroScreen 4.0 and HCAI Asthma ED Visits (2020)"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+  ggplot(df_combined, aes(x = median_poverty, y = ed_visits_per_100k)) +
+  geom_point(color = "darkgreen", size = 3) +
+  geom_smooth(method = "lm", se = TRUE, color = "black") +
+  labs(
+    title = "Asthma ED Rates vs. Median Poverty by County",
+    x = "Median Poverty Rate (%)",
+    y = "ED Visit Rate (per 100,000)",
+    caption = "Data: CalEnviroScreen 4.0 and HCAI Asthma ED Visits (2020)"
+  ) +
+  theme_minimal()
+```
+
+
+
+**Interpretation**: Counties with higher poverty rates often exhibit higher asthma ED visit rates, suggesting that socioeconomic factors may contribute independently to asthma burden.
+
