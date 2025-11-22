@@ -4,33 +4,19 @@ format: pdf
 editor: visual
 ---
 
-```{r, include=FALSE}
+```{r include=FALSE, message=FALSE, warning=FALSE}
 
 #install.packages("readxl")
 library(readxl)
 library(janitor)
 library(dplyr)
+library(knitr)
 library(readr)
 library(tidyverse)
+#install.packages("tinytex")
+#tinytex::install_tinytex()
+library(gt)
 ```
-
-Description of dataset:
-
-What is the data source? (1-2 sentences on where the data is coming from, dates included, etc.) How does the dataset relate to the group problem statement and question?
-
-> The data comes from CalEnviroScreen 4.0 (2021) by California’s Office of Environmental Health Hazard Assessment (OEHHA) and the California Department of Health Care Access and Information (HCAI), which provides county-level asthma emergency department visit rates from 2016–2021. These datasets would help us explore how environmental burdens across California counties relate to asthma outcomes and identify which areas could benefit from targeted interventions that could make the biggest impact.
-
-Identify data types for 5+ data elements/columns/variables:
-
-> 5 columns - chhs_asthma_ed: county, ED visit rate (and \# ED visits?) - ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden.
-
-> Questions we have: - in ces_measures, what does the asthma percentile column represent? numbers seem high to be a rate of the general population.
-
-Describe cleaning that each data source may need
-
-> cleaning: - NA values from ces_measures: asthma, number_of_ed_visits, poverty: We will replace with 0, "Unknown", or median(df\$column1, na.rm = TRUE) depending on context.
->
-> We changed the census_tract column of the ces_measures to character to account for any leading zeros.
 
 ```{r, include=FALSE}
 
@@ -38,8 +24,6 @@ ces_datadictionary <- read_excel("~/PHW251_2025/251-Group11/calenviroscreen_data
   
 head(ces_datadictionary)
 ```
-
-You can add options to executable code like this
 
 ```{r, include=FALSE}
 ces_measures <- read.csv("~/PHW251_2025/251-Group11/calenviroscreen_measures_2021.csv")
@@ -81,8 +65,6 @@ summary(ces_measures$pm2_5)
 summary(ces_measures$pollution_burden_score)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
-
 ```{r, include=FALSE}
 ces_scores_demog <- read.csv("~/PHW251_2025/251-Group11/calenviroscreen_scores_demog_2021.csv")
 
@@ -105,154 +87,13 @@ head(chhs_asthma_ed)
 summary(chhs_asthma_ed$number_of_ed_visits)
 ```
 
-> 5 columns - chhs_asthma_ed: county, ED visit rate (and \# ED visits?) -
->
-> ces_measures: county, asthma, PM2.5, diesel.PM, poverty, pollution burden.
+|     |
+|-----|
+|     |
 
-**In order to prepare each dataset for analysis (milestone #3), you will be expected to:**
-
--   **Cal Enviro Screen datasets**
-
-    -   **Recode common variable(s) to be combined with other datasets** 
-
-        -   this means make column names match?
-
-    -   **Identify environmental measure(s) of interest and summarize into a county-level value**
-
-        -   for indicators that are broken apart by census tract, combine into one county-level number, one row per county
-
-            -   we could do median of pm2.5, diesel.PM, poverty, pollution burden
-
-    -   **Summarize CalEnviroScreen score into a county level variable**
-
-        -   ces_scores_demog dataframe: ces_4_0_score column- combine into one row per county averaging all of the values.
-
-            -   one row per county, mean of all ces_4_0_score values.
-
-    -   **NOTE: the methods for each summary variable (environmental measure and  CalEnviroScreen score) should be different (i.e. if you calculate the mean for one, please use another method for the other). If you look at more than one environmental measure you can re-use summarization methods for this.** 
-
--   Asthma ED dataset - Angela
-
-    -   Recode common variable(s) to be combined with other datasets\_ *done* 
-
-    -   Recode values that are reading in incorrectly\_ *done*
-
-    -   Subset to most recent year and county level data\_ *done*
-
-    -   Select demographic strata of interest\_ *demographic strata of interest included was total population, so that we can more readily compare the numbers across data sets.*
-
-    -   Pivot table to only include one row per county \_ *used other functions to create one row per county*.
-
-For all scenarios, please turn in an html document created from an Rmd or Qmd with the following components:
-
--   Subset rows or columns, as needed
-
--   Create new variables needed for analysis (minimum 2)
-
-    -   New variables should be created based on existing columns; for example
-
-        -   Calculating a rate
-
-        -   Combining character strings
-
-        -   Aggregation
-
--   Clean variables needed for analysis (minimum 2)
-
-    -   Examples
-
-        -   Recode invalid values
-
-        -   Handle missing data
-
-        -   Recode categories
-
--   Data re-structured as needed (aggregated/summarized and/or pivoted)
-
--   Data dictionary based on clean dataset (minimum 4 data elements), including:
-
-    -   Variable name
-
-    -   Data type
-
-    -   Description
-
--   One or more tables with descriptive statistics for 4 data elements
-
--   Html output that is professionally prepared for presentation
-
-    -   Only the necessary information is outputted (you should suppress, for example, entire data frame outputs)
-
-    -   Use of headers and sub headers to create an organized document
-
-**Milestone 3 Rubric**
-
-+--------------------------------------------------------------------+---------------------+--------------------+
-|                                                                    |                     | Milestone 3 Rubric |
-+--------------------------------------------------------------------+---------------------+--------------------+
-| Criteria                                                           | Ratings             | Pts                |
-+--------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning Outcome                     | **2 ptsFull Marks** | 2 pts              |
-|                                                                    |                     |                    |
-| Subset rows or columns as needed                                   | **0 ptsNo Marks**   |                    |
-+--------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning Outcome                     | **3 ptsFull Marks** | 3 pts              |
-|                                                                    |                     |                    |
-| Create new variables needed for analysis (minimum 2)               | **0 ptsNo Marks**   |                    |
-+--------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning Outcome                     | **3 ptsFull Marks** | 3 pts              |
-|                                                                    |                     |                    |
-| Clean variables needed for analysis (minimum 2)                    | **0 ptsNo Marks**   |                    |
-+--------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning Outcome                     | **2 ptsFull Marks** | 2 pts              |
-|                                                                    |                     |                    |
-| Restructure datasets, as needed                                    | **0 ptsNo Marks**   |                    |
-+--------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning Outcome                     | **4 ptsFull Marks** | 4 pts              |
-|                                                                    |                     |                    |
-| Data dictionary based on clean dataset (minimum 4 data elements)   | **0 ptsNo Marks**   |                    |
-+--------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning Outcome                     | **4 ptsFull Marks** | 4 pts              |
-|                                                                    |                     |                    |
-| One or more tables with descriptive statistics for 4 data elements | **0 ptsNo Marks**   |                    |
-+--------------------------------------------------------------------+---------------------+--------------------+
-| This criterion is linked to a Learning Outcome                     | **2 ptsFull Marks** | 2 pts              |
-|                                                                    |                     |                    |
-| HTML document that is professionally prepared for presentation     | **0 ptsNo Marks**   |                    |
-+--------------------------------------------------------------------+---------------------+--------------------+
-
-Total Points: 20
-
-# **Milestone #3 starts here**
-
-Data Dictionary
-
-+-------------------+------------------------------------------------------+
-| California County | California county that the census tract falls within |
-+-------------------+------------------------------------------------------+
-
-+-----------------------------------+-----------------------------------------------------------------------------------------------+
-| Mean CES 4.0 Score                | Mean of CalEnviroScreen Score, Pollution Score multiplied by Population Characteristics Score |
-+-----------------------------------+-----------------------------------------------------------------------------------------------+
-
-|              |                                     |
-|--------------|-------------------------------------|
-| Median PM2.5 | Annual median PM 2.5 concentrations |
-
-+-----------------------------------+---------------------------------------------------------------------+
-| Median Diesel PM                  | Annual median Diesel PM emissions from on-road and non-road sources |
-+-----------------------------------+---------------------------------------------------------------------+
-
-+----------------+-----------------------------------------------------------------------------------------+
-| \              | Median Percent of population living below two times the federal poverty level by county |
-| Median Poverty |                                                                                         |
-+----------------+-----------------------------------------------------------------------------------------+
-
-+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
-| Median Traffic                    | Median traffic density, in vehicle-kilometers per hour per road length, within 150 meters of the census tract boundary by county |
-+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
-
-## Cleaning /Creating New Variables in Dataframes
+|     |     |
+|-----|-----|
+|     |     |
 
 ```{r, include=FALSE}
 #angela asthma dataframe 
@@ -465,4 +306,125 @@ Please submit an Rmd or Qmd and publish an html file on RPubs with the following
 
     -   Make sure you commit and push your rsconnect folder! [Read more details here.Links to an external site.](https://docs.google.com/document/d/1JSg5JUEI3JDD_rPAlAaVPno0MlUGQ6W_cyBvn6Ud1xs/edit?usp=sharing)
 
-\
+# Final datasets for creation of visualization
+
+```{r 1}
+df_combined <- df_combined %>%
+  mutate(
+   ces_category = case_when(
+      mean_ces_4_0_score < 20 ~ "Low",
+      mean_ces_4_0_score < 30 ~ "Moderate",
+      TRUE ~ "High"),
+    high_poverty = if_else(median_poverty > median(median_poverty), 
+                                "High poverty", "Low poverty"),
+    poverty_pollution_ratio = median_poverty / median_pm2_5
+  )
+```
+
+```{r Angela visual }
+
+ggplot(df_combined, aes(x = mean_ces_4_0_score,
+                        y = ed_visits_per_100k)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Relationship Between CalEnviroScreen Score and Asthma ED Visit Rates",
+    subtitle = "County-level scores and 2020 asthma emergency visit rates",
+    x = "Mean CalEnviroScreen 4.0 Score",
+    y = "ED Visit Rate (per 100,000)",
+    caption = "Data: OEHHA CalEnviroScreen 4.0 and HCAI Asthma ED Visits (2020)"
+  )
+
+
+```
+
+#### a) County-level summary table
+
+-   **Purpose:** Show key county metrics side by side for easy comparison.
+
+-   **Columns:**
+
+    -   County
+
+    -   Mean CES score
+
+    -   CES category
+
+    -   Median PM2.5
+
+    -   Median diesel PM
+
+    -   Median poverty
+
+    -   Asthma ED visit rate (age-adjusted)
+
+    -   ED visits per 100k
+
+-   **Interpretation:** Lets you see which counties have both high environmental exposure and high asthma rates. Could help prioritize intervention targets.
+
+-   **R example (using `kable` from `knitr` or `gt` for more polished tables):**
+
+```{r county level table}
+
+df_combined %>%
+  select(county, mean_ces_4_0_score, ces_category, median_pm2_5, median_diesel_pm, median_poverty, age_adjusted_ed_visit_rate) %>%
+  arrange(desc(age_adjusted_ed_visit_rate)) %>%
+  kable(caption = "County-level Environmental Measures and Asthma ED Rates (2020)")
+
+```
+
+b)  Stratified summary table Purpose: Compare asthma rates by poverty level or CES category. Example: Mean asthma ED rate by CES category:
+
+    Interpretation: Shows if high CES or high poverty counties tend to have higher asthma ED rates.
+
+```{r}
+df_combined %>%
+  group_by(ces_category) %>%
+  summarise(mean_ed_rate = mean(age_adjusted_ed_visit_rate, na.rm = TRUE),
+            mean_pm2_5 = mean(median_pm2_5, na.rm = TRUE),
+            mean_poverty = mean(median_poverty, na.rm = TRUE))
+
+```
+
+```{r}
+df_combined %>%
+  group_by(county, ces_category) %>%
+  summarise(mean_ed_rate = mean(age_adjusted_ed_visit_rate, na.rm = TRUE),
+            mean_pm2_5 = mean(median_pm2_5, na.rm = TRUE),
+            mean_poverty = mean(median_poverty, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(mean_ed_rate))
+```
+
+#### Boxplot of asthma ED rates by CES category
+
+-   **Purpose:** Visually compare distributions across “Low,” “Moderate,” and “High” CES counties.
+
+-   **Interpretation:** Highlights disparities in asthma rates across environmental burden categories.
+
+```{r}
+ggplot(df_combined, aes(x = ces_category, y = age_adjusted_ed_visit_rate, fill = ces_category)) +
+  geom_boxplot() +
+  labs(
+    title = "Distribution of Asthma ED Rates by CES Category",
+    x = "CES Category",
+    y = "Age-adjusted ED Visit Rate (per 100,000)",
+    caption = "Data: CalEnviroScreen 4.0 and HCAI Asthma ED Visits (2020)"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+  ggplot(df_combined, aes(x = median_poverty, y = ed_visits_per_100k)) +
+  geom_point(color = "darkgreen", size = 3) +
+  geom_smooth(method = "lm", se = TRUE, color = "black") +
+  labs(
+    title = "Asthma ED Rates vs. Median Poverty by County",
+    x = "Median Poverty Rate (%)",
+    y = "ED Visit Rate (per 100,000)",
+    caption = "Data: CalEnviroScreen 4.0 and HCAI Asthma ED Visits (2020)"
+  ) +
+  theme_minimal()
+```
+
+**Interpretation**: Counties with higher poverty rates often exhibit higher asthma ED visit rates, suggesting that socioeconomic factors may contribute independently to asthma burden.
