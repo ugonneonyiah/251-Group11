@@ -87,6 +87,8 @@ head(chhs_asthma_ed)
 summary(chhs_asthma_ed$number_of_ed_visits)
 ```
 
+
+
 |     |
 |-----|
 |     |
@@ -94,6 +96,8 @@ summary(chhs_asthma_ed$number_of_ed_visits)
 |     |     |
 |-----|-----|
 |     |     |
+
+
 
 ```{r, include=FALSE}
 #angela asthma dataframe 
@@ -142,8 +146,12 @@ df_env_measures
 
 ```
 
+
+
 ```         
 ```
+
+
 
 ```{r, include=FALSE}
 
@@ -160,7 +168,11 @@ df_scores
 
 ```
 
+
+
 ## <!-- ## Combine Dataframes and Re-Structured -->
+
+
 
 ```{r, include=FALSE}
 
@@ -174,7 +186,11 @@ df_combined
 
 ```
 
+
+
 ## <!-- ## Data re-structured and summarized -->
+
+
 
 ```{r, include=FALSE}
 df_combined %>%
@@ -192,7 +208,11 @@ df_combined %>%
 
 ```
 
+
+
 ## <!-- ## Create a Table for HTML Output -->
+
+
 
 ```{r, include=FALSE}
 library(gt)
@@ -215,10 +235,14 @@ df_combined %>%
 
 ```
 
+
+
 ```         
 ```
 
 ## <!-- ## Data Dictionary -->
+
+
 
 ```{r, include=FALSE}
 #Data Dictionary
@@ -257,6 +281,8 @@ data_dictionary %>%
   gt() %>%
   tab_header(title = "Data Dictionary — Clean County-Level Dataset")
 ```
+
+
 
 MILESTONE 4 STARTS HERE\
 
@@ -308,6 +334,8 @@ Please submit an Rmd or Qmd and publish an html file on RPubs with the following
 
 # Final datasets for creation of visualization
 
+
+
 ```{r 1, echo = TRUE}
 df_combined <- df_combined %>%
   mutate(
@@ -338,7 +366,11 @@ ggplot(df_combined, aes(x = mean_ces_4_0_score,
 
 ```
 
+
+
 Or the below includes county names.
+
+
 
 ```{r}
 library(ggplot2)
@@ -358,11 +390,15 @@ ggplot(df_combined, aes(x = mean_ces_4_0_score, y = ed_visits_per_100k)) +
   theme_minimal()
 ```
 
+
+
 #### a) County-level summary table
 
 -   **Purpose:** Show key county metrics side by side for easy comparison.
 
 -   **Interpretation:** Lets you see which counties have both high environmental exposure and high asthma rates. Could help prioritize intervention targets.
+
+
 
 ```{r county level table, echo = TRUE}
 
@@ -373,9 +409,13 @@ df_combined %>%
 
 ```
 
+
+
 b)  Stratified summary table Purpose: Compare asthma rates by poverty level or CES category. Example: Mean asthma ED rate by CES category:
 
     Interpretation: Shows if high CES or high poverty counties tend to have higher asthma ED rates.
+
+
 
 ```{r, echo = TRUE}
 df_combined %>%
@@ -396,11 +436,15 @@ df_combined %>%
   arrange(desc(mean_ed_rate))
 ```
 
+
+
 #### Boxplot of asthma ED rates by CES category
 
 -   **Purpose:** Visually compare distributions across “Low,” “Moderate,” and “High” CES counties.
 
 -   **Interpretation:** Highlights disparities in asthma rates across environmental burden categories.
+
+
 
 ```{r, echo = TRUE}
 ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_category)) +
@@ -427,11 +471,15 @@ ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_cat
   theme_minimal()
 ```
 
+
+
 **Interpretation**: Counties with higher poverty rates often exhibit higher asthma ED visit rates, suggesting that socioeconomic factors may contribute independently to asthma burden.
 
 **Scatterplot: Asthma ED Rate vs Median PM2.5**
 
 Shows how air pollution (PM2.5) relates to asthma ED rates.
+
+
 
 ```{r}
 ggplot(df_combined, aes(x = median_pm2_5, y = ed_visits_per_100k)) +
@@ -446,3 +494,4 @@ ggplot(df_combined, aes(x = median_pm2_5, y = ed_visits_per_100k)) +
   ) +
   theme_minimal()
 ```
+
