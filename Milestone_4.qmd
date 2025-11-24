@@ -417,6 +417,7 @@ ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_cat
 ```{r, echo = TRUE}
   ggplot(df_combined, aes(x = median_poverty, y = ed_visits_per_100k)) +
   geom_point(color = "darkgreen", size = 3) +
+    geom_text_repel(aes(label = county), size = 3, max.overlaps = 10)+
   geom_smooth(method = "lm", se = TRUE, color = "black") +
   labs(
     title = "Asthma ED Rates vs. Median Poverty by County",
