@@ -258,7 +258,7 @@ data_dictionary %>%
   tab_header(title = "Data Dictionary — Clean County-Level Dataset")
 ```
 
-MILESTONE 4 STARTS HERE\
+# MILESTONE 4 STARTS HERE 
 
 Please submit an Rmd or Qmd and publish an html file on RPubs with the following:
 
@@ -309,17 +309,105 @@ Please submit an Rmd or Qmd and publish an html file on RPubs with the following
 # Final datasets for creation of visualization
 
 ```{r 1, echo = TRUE}
+# read in and clean all 3 files (reuse from Milestone 3)
+
+# chhs_asthma_ed, calenviroscreen_measures_2021, ces_scores_demog
+
+# ... your existing df_asthma, df_env_measures, df_scores code ...
+
+df_combined <- df_scores %>%
+left_join(df_asthma,      by = "county") %>%
+left_join(df_env_measures, by = "county")
+
+# any extra derived variables (env_exposure_index, ces_category, etc.)
+
+# e.g.:
+
 df_combined <- df_combined %>%
-  mutate(
-   ces_category = case_when(
-      mean_ces_4_0_score < 20 ~ "Low",
-      mean_ces_4_0_score < 30 ~ "Moderate",
-      TRUE ~ "High"),
-    high_poverty = if_else(median_poverty > median(median_poverty), 
-                                "High poverty", "Low poverty"),
-    poverty_pollution_ratio = median_poverty / median_pm2_5
-  )
+mutate(
+ces_category = case_when(
+mean_ces_4_0_score >= quantile(mean_ces_4_0_score, 2/3, na.rm = TRUE) ~ "High",
+mean_ces_4_0_score <= quantile(mean_ces_4_0_score, 1/3, na.rm = TRUE) ~ "Low",
+TRUE ~ "Moderate"
+)
+)
+
+str(df_combined)
 ```
+
+```{r}
+#
+df_combined %>%
+select(
+county,
+mean_ces_4_0_score,
+median_pm2_5,
+median_poverty,
+age_adjusted_ed_visit_rate
+) %>%
+arrange(desc(age_adjusted_ed_visit_rate)) %>%
+slice_head(n = 10) %>%
+gt() %>%
+tab_header(
+title = "Counties with Highest Asthma ED Visit Rates",
+subtitle = "With CalEnviroScreen scores and key environmental indicators"
+) %>%
+cols_label(
+county = "County",
+mean_ces_4_0_score = "CES 4.0 (Mean)",
+median_pm2_5 = "PM2.5 (Median, µg/m³)",
+median_poverty = "Poverty (Median, %)",
+age_adjusted_ed_visit_rate = "Asthma ED Rate (Age-Adjusted)"
+) %>%
+fmt_number(
+columns = where(is.numeric),
+decimals = 2
+) %>%
+tab_source_note(
+md("*Note:* Asthma ED rate is age-adjusted (CHHS). Environmental indicators are tract-level medians aggregated to county.")
+)
+
+```
+
+**Interpretation:** Counties with the highest age-adjusted asthma ED visit rates often also have higher CES scores, higher PM2.5, and higher poverty. This pattern suggests that both environmental and socioeconomic factors may contribute to asthma burden\
+
+## **Stratified table: asthma by CES category**
+
+```{r}
+ces_summary <- df_combined %>%
+group_by(ces_category) %>%
+summarise(
+mean_ed_rate  = mean(age_adjusted_ed_visit_rate, na.rm = TRUE),
+mean_pm2_5    = mean(median_pm2_5, na.rm = TRUE),
+mean_poverty  = mean(median_poverty, na.rm = TRUE),
+.groups = "drop"
+)
+
+ces_summary %>%
+gt() %>%
+tab_header(
+title = "Asthma ED Rates and Environmental Indicators by CES Category"
+) %>%
+cols_label(
+ces_category = "CES Category",
+mean_ed_rate = "Mean Asthma ED Rate (Age-Adjusted)",
+mean_pm2_5   = "Mean PM2.5 (Median, µg/m³)",
+mean_poverty = "Mean Poverty (Median, %)"
+) %>%
+fmt_number(columns = where(is.numeric), decimals = 2)
+```
+
+**Interpretation:** High-CES counties have higher mean asthma ED rates as well as higher mean PM2.5 and poverty compared to Low-CES counties, supporting the idea that combined environmental and social vulnerabilities are associated with worse asthma outcomes.
+
+### Create `ed_visits_per_100k` as a renamed version of that rate for visualizations
+
+```{r}
+df_combined <- df_combined %>%
+  mutate(ed_visits_per_100k = age_adjusted_ed_visit_rate)
+
+```
+
+###  Plot 1: Asthma vs CES
 
 ```{r Angela visual, echo = TRUE}
 
@@ -358,7 +446,9 @@ ggplot(df_combined, aes(x = mean_ces_4_0_score, y = ed_visits_per_100k)) +
   theme_minimal()
 ```
 
-#### a) County-level summary table
+Interpretation: The positive slope suggests that counties with higher CES 4.0 scores tend to have higher asthma ED visit rates, indicating a possible link between cumulative environmental/social burden and asthma.
+
+#### County-level summary table
 
 -   **Purpose:** Show key county metrics side by side for easy comparison.
 
@@ -396,11 +486,11 @@ df_combined %>%
   arrange(desc(mean_ed_rate))
 ```
 
-#### Boxplot of asthma ED rates by CES category
+### Plot 2: Boxplot of asthma ED rates by CES category
 
 -   **Purpose:** Visually compare distributions across “Low,” “Moderate,” and “High” CES counties.
 
--   **Interpretation:** Highlights disparities in asthma rates across environmental burden categories.
+-   **Interpretation:** The distribution of asthma ED rates is shifted higher in High CES counties compared to Low CES counties, highlighting disparities in asthma burden across environmental risk levels.
 
 ```{r, echo = TRUE}
 ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_category)) +
@@ -413,6 +503,8 @@ ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_cat
   ) +
   theme_minimal()
 ```
+
+### Plot 3: Asthma ED Rates vs. Median Poverty by County
 
 ```{r, echo = TRUE}
   ggplot(df_combined, aes(x = median_poverty, y = ed_visits_per_100k)) +
@@ -430,9 +522,7 @@ ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_cat
 
 **Interpretation**: Counties with higher poverty rates often exhibit higher asthma ED visit rates, suggesting that socioeconomic factors may contribute independently to asthma burden.
 
-**Scatterplot: Asthma ED Rate vs Median PM2.5**
-
-Shows how air pollution (PM2.5) relates to asthma ED rates.
+### **Plot 4: Scatterplot- Asthma ED Rate vs Median PM2.5**
 
 ```{r}
 ggplot(df_combined, aes(x = median_pm2_5, y = ed_visits_per_100k)) +
@@ -447,3 +537,5 @@ ggplot(df_combined, aes(x = median_pm2_5, y = ed_visits_per_100k)) +
   ) +
   theme_minimal()
 ```
+
+**Interpretation:** Shows how air pollution (PM2.5) relates to asthma ED rates.
