@@ -1,6 +1,6 @@
 ---
 #title: "Milestone 2, Group 11"
-format: pdf
+format: html
 editor: visual
 ---
 
@@ -492,4 +492,4 @@ ggplot(df_combined, aes(x = median_pm2_5, y = ed_visits_per_100k)) +
   theme_minimal()
 ```
 
-**Interpretation:** Shows how air pollution (PM2.5) relates to asthma ED rates.
+**Interpretation:** Shows how air pollution (PM2.5) relates to asthma ED rates, this scatterplot shows a steady ED visit rate as median PM2.5 increases, which fails to show an association between the exposure and outcome.
