@@ -142,9 +142,6 @@ df_env_measures
 
 ```
 
-```         
-```
-
 ```{r, include=FALSE}
 
 #angela CES scores data frame
@@ -215,9 +212,6 @@ df_combined %>%
 
 ```
 
-```         
-```
-
 ## <!-- ## Data Dictionary -->
 
 ```{r, include=FALSE}
@@ -258,9 +252,31 @@ data_dictionary %>%
   tab_header(title = "Data Dictionary — Clean County-Level Dataset")
 ```
 
-# MILESTONE 4 STARTS HERE
+# Environment and Asthma in California
 
-# Final datasets for creation of visualization
+## Problem Statement
+
+Asthma, a chronic respiratory disease, is a persistent public health concern throughout California. Asthma is exacerbated by environmental exposures like air pollution as well as social stressors. We evaluated how asthma-related emergency department (ED) visits are associated with environmental exposures (air pollution, traffic diesel PM) and social vulnerability (poverty). We evaluated whether county-level summaries of the CalEnviroScreen (CES) 4.0 measure and the specific tract-level environment indicators (PM2.5, diesel PM, traffic, poverty) align with county asthma ED visits rates. Our goal was to identify counties where cumulative environmental and social burdens coincide with high asthma ED rates and to flag specific environmental measures for further investigation or targeted intervention.
+
+We focused on county-level comparison because public health actions relating to environmental exposures and asthma are implemented at a higher level. By aggregating county-level measures and comparing them to CHHS asthma ED rates, we will assess the correlation between a county's CES summary and CHHS asthma burden and examine whether individual environmental indicators like PM2.5 and diesel PM, or socioeconomic indications like poverty, identify a relationship with asthma ED rates that merit deeper inquiry. 
+
+## Methods
+
+We used 3 main sources with 2021 data: CalEnviroScreen tract-level measures (calenviroscreen_measures_2021.csv), CES demographics and scores at tract-level (calenviroscreen_scores_demog_2021.csv), and county asthma ED visit data from California Health and Human Services (chhs_asthma_ed.csv). In order to be able to combine and compare data from each of these sources, we cleaned each source, ensuring column and row names matched between each dataframe. We also created county-level summary variables, merged data into single-county datasets, and ran descriptive statistics, visualization, stratified comparisons, and regression/correlation analysis. At the end we produced quality tables and gt/ ggplot2 and ran RPubs- published HTML. 
+
+#### Date source 1: OEHHA CalEnviroScreen
+
+-   We cleaned up the names to be consistent, converted census_tract to characters to preserve leading zeros. Then we recoded sentinel numeric values (-999,-1) to N/A, and to be more specific in the environmental measures we picked: pm2_5, diesel_pm, poverty, traffic. With these measurements we computed the median for each of them and created county by title casing the california_county field and appending “County”. The median was chosen for tract measures to reduce influence of extreme tract values when summarizing across heterogeneous counties.
+
+#### Data source 2: CES Scores and Demographics
+
+-   We had to clean the names up by combining the title case and County. Aggregate tract CES scores to the county level using the mean of ces_4_0_score to produce mean_ces_4_0_score. Then the sum tract total_population to produce a county total_population. As we created categorical CES variables ces_category by tertiles (high,moderate,low) using the ⅓ and ⅔ quantiles of mean_ces_4_0_score to enable statistical comparisons and linear regression with lm(ed_rate \~ mean_ces_4_0_score) to quantify association between CES and asthma ED rates.
+
+#### Data source 3: CHHS Asthma ED Data
+
+-   This dataset comes the California health and human services asthma emergency department (ED) visit record, which reports county-level counts and rates by year, age group, and race/ethnicity. We wanted to limit the data to align with 2020 and CES 4.0 and this will match our dataset. When apply the clean the data we restricted it to “Total Population” and removed the statewide aggregate “California” to remain only county-level observations. For the county we standardized the “County” suffix, and numeric variable were checked for sentinel missing value, with N/As handled according to documented rules (converted to zero where appropriate). We created ed_visits_per_100k using both the calculated rate (number_of_ed_visits / total_population × 100,000) and the CHHS provided age_adjusted_ed_visit_rate, using age-adjusted rate for the primary analyses to ensure comparability across countries with different age structures. The analytic step generates datasets that makes descriptive summaries of ED counts and rate, merging with CES scores and the environment indicator, producing top 10 county tables, and assessing association through Pearson/Spearman correlation and simple linear regression with coefficients, 95% Cls, and R². With this information we generated scatterplots and boxplots, noting that results represent ecological pattern and may be affected by residual confounding.
+
+## Results 
 
 ```{r 1, echo = TRUE}
 # read in and clean all 3 files (reuse from Milestone 3)
@@ -289,7 +305,7 @@ TRUE ~ "Moderate"
 str(df_combined)
 ```
 
-```{r, echo = TRUE}
+```{r, include = FALSE, warning = FALSE, message = FALSE, echo = TRUE}
 #
 df_combined %>%
 select(
@@ -323,11 +339,9 @@ md("*Note:* Asthma ED rate is age-adjusted (CHHS). Environmental indicators are 
 
 ```
 
-**Interpretation:** Counties with the highest age-adjusted asthma ED visit rates often also have higher CES scores, higher PM2.5, and higher poverty. This pattern suggests that both environmental and socioeconomic factors may contribute to asthma burden\
+#### **Stratified table: asthma by CES category**
 
-## **Stratified table: asthma by CES category**
-
-```{r, echo = TRUE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 ces_summary <- df_combined %>%
 group_by(ces_category) %>%
 summarise(
@@ -363,7 +377,7 @@ df_combined <- df_combined %>%
 
 ### Plot 1: Asthma vs CES
 
-```{r Angela visual, echo = TRUE}
+```{r Angela visual, include = FALSE, warning=FALSE, message=FALSE}
 
 ggplot(df_combined, aes(x = mean_ces_4_0_score,
                         y = ed_visits_per_100k)) +
@@ -382,12 +396,12 @@ ggplot(df_combined, aes(x = mean_ces_4_0_score,
 
 Or the below includes county names.
 
-```{r, echo = TRUE}
+```{r Angela visual, echo = FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
 library(ggrepel)
 
 ggplot(df_combined, aes(x = mean_ces_4_0_score, y = ed_visits_per_100k)) +
-  geom_point(color = "darkblue", size = 3) +
+  geom_point(color = "darkgreen", size = 3) +
   geom_smooth(method = "lm", se = TRUE, color = "black") +
   geom_text_repel(aes(label = county), size = 3, max.overlaps = 10) +
   labs(
@@ -408,7 +422,7 @@ Interpretation: The positive slope suggests that counties with higher CES 4.0 sc
 
 -   **Interpretation:** Lets you see which counties have both high environmental exposure and high asthma rates. Could help prioritize intervention targets.
 
-```{r county level table, echo = TRUE}
+```{r include=FALSE}
 
 df_combined %>%
   select(county, mean_ces_4_0_score, ces_category, median_pm2_5, median_diesel_pm, median_poverty, ed_visits_per_100k) %>%
@@ -421,7 +435,7 @@ b)  Stratified summary table Purpose: Compare asthma rates by poverty level or C
 
     Interpretation: Shows if high CES or high poverty counties tend to have higher asthma ED rates.
 
-```{r, echo = TRUE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 df_combined %>%
   group_by(ces_category) %>%
   summarise(mean_ed_rate = mean(ed_visits_per_100k, na.rm = TRUE),
@@ -430,7 +444,7 @@ df_combined %>%
 
 ```
 
-```{r, echo = TRUE}
+```{r, include = FALSE, warning = FALSE, message = FALSE}
 df_combined %>%
   group_by(county, ces_category) %>%
   summarise(mean_ed_rate = mean(ed_visits_per_100k, na.rm = TRUE),
@@ -446,7 +460,7 @@ df_combined %>%
 
 -   **Interpretation:** The distribution of asthma ED rates is shifted higher in High CES counties compared to Low CES counties, highlighting disparities in asthma burden across environmental risk levels.
 
-```{r, echo = TRUE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_category)) +
   geom_boxplot() +
   labs(
@@ -460,7 +474,7 @@ ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_cat
 
 ### Plot 3: Asthma ED Rates vs. Median Poverty by County
 
-```{r, echo = TRUE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
   ggplot(df_combined, aes(x = median_poverty, y = ed_visits_per_100k)) +
   geom_point(color = "darkgreen", size = 3) +
     geom_text_repel(aes(label = county), size = 3, max.overlaps = 10)+
@@ -476,20 +490,14 @@ ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_cat
 
 **Interpretation**: Counties with higher poverty rates often exhibit higher asthma ED visit rates, suggesting that socioeconomic factors may contribute independently to asthma burden.
 
-### **Plot 4: Scatterplot- Asthma ED Rate vs Median PM2.5**
+### 
 
-```{r, echo = TRUE}
-ggplot(df_combined, aes(x = median_pm2_5, y = ed_visits_per_100k)) +
-  geom_point(color = "darkgreen", size = 3) +
-  geom_smooth(method = "lm", se = TRUE, color = "black") +
-  geom_text_repel(aes(label = county), size = 3, max.overlaps = 10) +
-  labs(
-    title = "County-level Asthma ED Rates vs PM2.5",
-    x = "Median PM2.5 (µg/m³)",
-    y = "ED Visit Rate (per 100,000)",
-    caption = "Data: CalEnviroScreen 4.0 and HCAI Asthma ED Visits (2020)"
-  ) +
-  theme_minimal()
-```
+## Discussion
 
-**Interpretation:** Shows how air pollution (PM2.5) relates to asthma ED rates, this scatterplot shows a steady ED visit rate as median PM2.5 increases, which fails to show an association between the exposure and outcome.
+The results consistently show that counties with higher cumulative environmental burdens, measured through CES 4.0, also experience higher asthma-related emergency department (ED) visit rates. The correlation analyses and descriptive summaries point in the same direction: as CES scores, pollution indicators, and poverty increase, asthma ED visit rates increase as well.
+
+\
+The findings underscore the connections between environmental justice, community conditions, and respiratory health. Counties with higher CES scores are often communities facing structural disadvantage, higher pollution exposure, and fewer protective resources. Higher asthma ED visits in these counties highlights how environment inequities translate into real health consequences. This means for policymakers and public health agencies that interventions aimed at improving asthma outcomes cannot focus solely on clinical care, they also need to address environmental exposures, access to preventive resources, and neighborhood infrastructure.
+
+\
+Some limitations may include that these results are based on a county-level aggregate, which reduces local variation 
