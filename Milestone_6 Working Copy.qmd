@@ -278,7 +278,7 @@ We used 3 main sources with 2021 data: CalEnviroScreen tract-level measures (cal
 
 ## Results
 
-```{r 1, echo = TRUE}
+```{r 1, include=FALSE}
 # read in and clean all 3 files (reuse from Milestone 3)
 
 # chhs_asthma_ed, calenviroscreen_measures_2021, ces_scores_demog
@@ -367,9 +367,7 @@ fmt_number(columns = where(is.numeric), decimals = 2)
 
 **Interpretation:** High-CES counties have higher mean asthma ED rates as well as higher mean PM2.5 and poverty compared to Low-CES counties, supporting the idea that combined environmental and social vulnerabilities are associated with worse asthma outcomes.
 
-### Create `ed_visits_per_100k` as a renamed version of that rate for visualizations
-
-```{r, echo = TRUE}
+```{r, include = FALSE}
 df_combined <- df_combined %>%
   mutate(ed_visits_per_100k = age_adjusted_ed_visit_rate)
 
@@ -394,8 +392,6 @@ ggplot(df_combined, aes(x = mean_ces_4_0_score,
 
 ```
 
-Or the below includes county names.
-
 ```{r Angela visual 2, echo = FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
 library(ggrepel)
@@ -416,12 +412,6 @@ ggplot(df_combined, aes(x = mean_ces_4_0_score, y = ed_visits_per_100k)) +
 
 Interpretation: The positive slope suggests that counties with higher CES 4.0 scores tend to have higher asthma ED visit rates, indicating a possible link between cumulative environmental/social burden and asthma.
 
-#### County-level summary table
-
--   **Purpose:** Show key county metrics side by side for easy comparison.
-
--   **Interpretation:** Lets you see which counties have both high environmental exposure and high asthma rates. Could help prioritize intervention targets.
-
 ```{r include=FALSE}
 
 df_combined %>%
@@ -431,11 +421,7 @@ df_combined %>%
 
 ```
 
-b)  Stratified summary table Purpose: Compare asthma rates by poverty level or CES category. Example: Mean asthma ED rate by CES category:
-
-    Interpretation: Shows if high CES or high poverty counties tend to have higher asthma ED rates.
-
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, include = FALSE, warning=FALSE, message=FALSE}
 df_combined %>%
   group_by(ces_category) %>%
   summarise(mean_ed_rate = mean(ed_visits_per_100k, na.rm = TRUE),
