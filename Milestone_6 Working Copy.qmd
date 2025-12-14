@@ -1,5 +1,5 @@
 ---
-#title: "Milestone 2, Group 11"
+#title: "Milestone 6, Group 11"
 format: html
 editor: visual
 ---
@@ -365,7 +365,7 @@ mean_poverty = "Mean Poverty (Median, %)"
 fmt_number(columns = where(is.numeric), decimals = 2)
 ```
 
-**Interpretation:** High-CES counties have higher mean asthma ED rates as well as higher mean PM2.5 and poverty compared to Low-CES counties, supporting the idea that combined environmental and social vulnerabilities are associated with worse asthma outcomes.
+**Interpretation:** This table compares asthma ED visit rates alongside PM2.5 and poverty levels across the three CES categories. Counties in the High CES category consistently show the greatest burden; they have the highest asthma ED rates, higher PM2.5, and higher poverty percentages compared to the other groups. Counties in the Low CES category have noticeably lower values across all three indicators. The Moderate group sits in between but still shows elevated asthma ED rates relative to the Low CES counties. Overall, this table highlights a clear pattern, supporting the idea that combined environmental and social vulnerabilities are associated with worse asthma outcomes.
 
 ```{r, include = FALSE}
 df_combined <- df_combined %>%
@@ -410,7 +410,7 @@ ggplot(df_combined, aes(x = mean_ces_4_0_score, y = ed_visits_per_100k)) +
   theme_minimal()
 ```
 
-Interpretation: The positive slope suggests that counties with higher CES 4.0 scores tend to have higher asthma ED visit rates, indicating a possible link between cumulative environmental/social burden and asthma.
+**Interpretation:** The positive slope suggests that counties with higher CES 4.0 scores tend to have higher asthma ED visit rates, indicating a possible link between cumulative environmental/social burden and asthma.
 
 ```{r include=FALSE}
 
@@ -442,10 +442,6 @@ df_combined %>%
 
 ### Plot 2: Boxplot of asthma ED rates by CES category
 
--   **Purpose:** Visually compare distributions across “Low,” “Moderate,” and “High” CES counties.
-
--   **Interpretation:** The distribution of asthma ED rates is shifted higher in High CES counties compared to Low CES counties, highlighting disparities in asthma burden across environmental risk levels.
-
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_category)) +
   geom_boxplot() +
@@ -457,6 +453,8 @@ ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_cat
   ) +
   theme_minimal()
 ```
+
+-   **Interpretation:** This graph visually compares distributions across “Low,” “Moderate,” and “High” CES counties.The distribution of asthma ED rates is shifted higher in High CES counties compared to Low CES counties, highlighting disparities in asthma burden across environmental risk levels.
 
 ### Plot 3: Asthma ED Rates vs. Median Poverty by County
 
@@ -483,7 +481,6 @@ ggplot(df_combined, aes(x = ces_category, y = ed_visits_per_100k, fill = ces_cat
 The results consistently show that counties with higher cumulative environmental burdens, measured through CES 4.0, also experience higher asthma-related emergency department (ED) visit rates. The correlation analyses and descriptive summaries point in the same direction: as CES scores, pollution indicators, and poverty increase, asthma ED visit rates increase as well.
 
 \
-The findings underscore the connections between environmental justice, community conditions, and respiratory health. Counties with higher CES scores are often communities facing structural disadvantage, higher pollution exposure, and fewer protective resources. Higher asthma ED visits in these counties highlights how environment inequities translate into real health consequences. This means for policymakers and public health agencies that interventions aimed at improving asthma outcomes cannot focus solely on clinical care, they also need to address environmental exposures, access to preventive resources, and neighborhood infrastructure.
+The findings underscore the connections between environmental justice, community conditions, and respiratory health. Counties with higher CES scores are often communities facing structural disadvantage, higher pollution exposure, and fewer protective resources. Higher asthma ED visits in these counties highlight how environmental inequities translate into real health consequences. This means that, for policymakers and public health agencies, interventions aimed at improving asthma outcomes cannot focus solely on clinical care; they also need to address environmental exposures, access to preventive resources, and neighborhood infrastructure.
 
-\
-Some limitations may include that these results are based on a county-level aggregate, which reduces local variation 
+Some limitations to note are that all our results are based on county-level data, which can mask neighborhood-level variation and may overlook communities within a county that experience even higher burdens. Because of this, we can’t make any conclusions about individuals or specific census tracts. There's also some timing mismatch across the datasets, since the CES indicators and asthma ED data don’t come from the exact same year. And since this is a cross-sectional, descriptive analysis, we can’t say that these environmental burdens *cause* higher asthma ED rates; we can only describe the patterns we see across counties.

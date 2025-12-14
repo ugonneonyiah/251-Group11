@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -138,67 +104,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read in and clean all 3 files (reuse from Milestone 3)</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># chhs_asthma_ed, calenviroscreen_measures_2021, ces_scores_demog</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ... your existing df_asthma, df_env_measures, df_scores code ...</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>df_combined <span class="ot">&lt;-</span> df_scores <span class="sc">%&gt;%</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">left_join</span>(df_asthma,      <span class="at">by =</span> <span class="st">"county"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">left_join</span>(df_env_measures, <span class="at">by =</span> <span class="st">"county"</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># any extra derived variables (env_exposure_index, ces_category, etc.)</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># e.g.:</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df_combined <span class="ot">&lt;-</span> df_combined <span class="sc">%&gt;%</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">ces_category =</span> <span class="fu">case_when</span>(</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>mean_ces_4_0_score <span class="sc">&gt;=</span> <span class="fu">quantile</span>(mean_ces_4_0_score, <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">"High"</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>mean_ces_4_0_score <span class="sc">&lt;=</span> <span class="fu">quantile</span>(mean_ces_4_0_score, <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">"Low"</span>,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Moderate"</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df_combined)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>tibble [58 × 11] (S3: tbl_df/tbl/data.frame)
- $ county                    : chr [1:58] "Alameda County" "Alpine County" "Amador County" "Butte County" ...
- $ mean_ces_4_0_score        : num [1:58] 22.9 13.6 20.7 21.7 16.1 ...
- $ total_population          : int [1:58] 1656754 1039 38429 225817 45514 21454 1142251 27495 188563 984521 ...
- $ year                      : num [1:58] 2020 2020 2020 2020 2020 2020 2020 2020 2020 2020 ...
- $ number_of_ed_visits       : num [1:58] 4282 0 103 474 111 ...
- $ age_adjusted_ed_visit_rate: num [1:58] 25.8 0 31.2 24.2 30.4 24 27.5 40.6 20.6 34 ...
- $ median_pm2_5              : num [1:58] 8.71 3.05 8.24 8.45 8.44 ...
- $ median_diesel_pm          : num [1:58] 0.26041 0.00262 0.01219 0.0703 0.00744 ...
- $ median_poverty            : num [1:58] 17.1 38.9 23.1 36 26.9 ...
- $ median_traffic            : num [1:58] 928 70.2 212.7 455.3 214.8 ...
- $ ces_category              : chr [1:58] "Moderate" "Low" "Moderate" "Moderate" ...</code></pre>
-</div>
-</div>
 <section id="stratified-table-asthma-by-ces-category" class="level4">
 <h4 class="anchored" data-anchor-id="stratified-table-asthma-by-ces-category"><strong>Stratified table: asthma by CES category</strong></h4>
 <div class="cell">
 <div class="cell-output-display">
-<div id="vlmikqdsdc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#vlmikqdsdc table {
+<div id="rzxnbnrjof" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rzxnbnrjof table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#vlmikqdsdc thead, #vlmikqdsdc tbody, #vlmikqdsdc tfoot, #vlmikqdsdc tr, #vlmikqdsdc td, #vlmikqdsdc th {
+#rzxnbnrjof thead, #rzxnbnrjof tbody, #rzxnbnrjof tfoot, #rzxnbnrjof tr, #rzxnbnrjof td, #rzxnbnrjof th {
   border-style: none;
 }
 
-#vlmikqdsdc p {
+#rzxnbnrjof p {
   margin: 0;
   padding: 0;
 }
 
-#vlmikqdsdc .gt_table {
+#rzxnbnrjof .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -224,12 +150,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_caption {
+#rzxnbnrjof .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#vlmikqdsdc .gt_title {
+#rzxnbnrjof .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -241,7 +167,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#vlmikqdsdc .gt_subtitle {
+#rzxnbnrjof .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -253,7 +179,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#vlmikqdsdc .gt_heading {
+#rzxnbnrjof .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -265,13 +191,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_bottom_border {
+#rzxnbnrjof .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_col_headings {
+#rzxnbnrjof .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -286,7 +212,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_col_heading {
+#rzxnbnrjof .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -306,7 +232,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#vlmikqdsdc .gt_column_spanner_outer {
+#rzxnbnrjof .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -318,15 +244,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#vlmikqdsdc .gt_column_spanner_outer:first-child {
+#rzxnbnrjof .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#vlmikqdsdc .gt_column_spanner_outer:last-child {
+#rzxnbnrjof .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#vlmikqdsdc .gt_column_spanner {
+#rzxnbnrjof .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -338,11 +264,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#vlmikqdsdc .gt_spanner_row {
+#rzxnbnrjof .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#vlmikqdsdc .gt_group_heading {
+#rzxnbnrjof .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -368,7 +294,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#vlmikqdsdc .gt_empty_group_heading {
+#rzxnbnrjof .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -383,15 +309,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#vlmikqdsdc .gt_from_md > :first-child {
+#rzxnbnrjof .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#vlmikqdsdc .gt_from_md > :last-child {
+#rzxnbnrjof .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#vlmikqdsdc .gt_row {
+#rzxnbnrjof .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -410,7 +336,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#vlmikqdsdc .gt_stub {
+#rzxnbnrjof .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -423,7 +349,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#vlmikqdsdc .gt_stub_row_group {
+#rzxnbnrjof .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -437,15 +363,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#vlmikqdsdc .gt_row_group_first td {
+#rzxnbnrjof .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#vlmikqdsdc .gt_row_group_first th {
+#rzxnbnrjof .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#vlmikqdsdc .gt_summary_row {
+#rzxnbnrjof .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -455,16 +381,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#vlmikqdsdc .gt_first_summary_row {
+#rzxnbnrjof .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_first_summary_row.thick {
+#rzxnbnrjof .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#vlmikqdsdc .gt_last_summary_row {
+#rzxnbnrjof .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -474,7 +400,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_grand_summary_row {
+#rzxnbnrjof .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -484,7 +410,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#vlmikqdsdc .gt_first_grand_summary_row {
+#rzxnbnrjof .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -494,7 +420,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_last_grand_summary_row_top {
+#rzxnbnrjof .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -504,11 +430,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_striped {
+#rzxnbnrjof .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#vlmikqdsdc .gt_table_body {
+#rzxnbnrjof .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -517,7 +443,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_footnotes {
+#rzxnbnrjof .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -531,7 +457,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_footnote {
+#rzxnbnrjof .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -540,7 +466,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#vlmikqdsdc .gt_sourcenotes {
+#rzxnbnrjof .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -554,7 +480,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#vlmikqdsdc .gt_sourcenote {
+#rzxnbnrjof .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -562,72 +488,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#vlmikqdsdc .gt_left {
+#rzxnbnrjof .gt_left {
   text-align: left;
 }
 
-#vlmikqdsdc .gt_center {
+#rzxnbnrjof .gt_center {
   text-align: center;
 }
 
-#vlmikqdsdc .gt_right {
+#rzxnbnrjof .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#vlmikqdsdc .gt_font_normal {
+#rzxnbnrjof .gt_font_normal {
   font-weight: normal;
 }
 
-#vlmikqdsdc .gt_font_bold {
+#rzxnbnrjof .gt_font_bold {
   font-weight: bold;
 }
 
-#vlmikqdsdc .gt_font_italic {
+#rzxnbnrjof .gt_font_italic {
   font-style: italic;
 }
 
-#vlmikqdsdc .gt_super {
+#rzxnbnrjof .gt_super {
   font-size: 65%;
 }
 
-#vlmikqdsdc .gt_footnote_marks {
+#rzxnbnrjof .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#vlmikqdsdc .gt_asterisk {
+#rzxnbnrjof .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#vlmikqdsdc .gt_indent_1 {
+#rzxnbnrjof .gt_indent_1 {
   text-indent: 5px;
 }
 
-#vlmikqdsdc .gt_indent_2 {
+#rzxnbnrjof .gt_indent_2 {
   text-indent: 10px;
 }
 
-#vlmikqdsdc .gt_indent_3 {
+#rzxnbnrjof .gt_indent_3 {
   text-indent: 15px;
 }
 
-#vlmikqdsdc .gt_indent_4 {
+#rzxnbnrjof .gt_indent_4 {
   text-indent: 20px;
 }
 
-#vlmikqdsdc .gt_indent_5 {
+#rzxnbnrjof .gt_indent_5 {
   text-indent: 25px;
 }
 
-#vlmikqdsdc .katex-display {
+#rzxnbnrjof .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#vlmikqdsdc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#rzxnbnrjof div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -669,18 +595,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p><strong>Interpretation:</strong> High-CES counties have higher mean asthma ED rates as well as higher mean PM2.5 and poverty compared to Low-CES counties, supporting the idea that combined environmental and social vulnerabilities are associated with worse asthma outcomes.</p>
-</section>
-<section id="create-ed_visits_per_100k-as-a-renamed-version-of-that-rate-for-visualizations" class="level3">
-<h3 class="anchored" data-anchor-id="create-ed_visits_per_100k-as-a-renamed-version-of-that-rate-for-visualizations">Create <code>ed_visits_per_100k</code> as a renamed version of that rate for visualizations</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_combined <span class="ot">&lt;-</span> df_combined <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ed_visits_per_100k =</span> age_adjusted_ed_visit_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<p><strong>Interpretation:</strong> This table compares asthma ED visit rates alongside PM2.5 and poverty levels across the three CES categories. Counties in the High CES category consistently show the greatest burden; they have the highest asthma ED rates, higher PM2.5, and higher poverty percentages compared to the other groups. Counties in the Low CES category have noticeably lower values across all three indicators. The Moderate group sits in between but still shows elevated asthma ED rates relative to the Low CES counties. Overall, this table highlights a clear pattern, supporting the idea that combined environmental and social vulnerabilities are associated with worse asthma outcomes.</p>
 </section>
 <section id="plot-1-asthma-vs-ces" class="level3">
 <h3 class="anchored" data-anchor-id="plot-1-asthma-vs-ces">Plot 1: Asthma vs CES</h3>
-<p>Or the below includes county names.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -690,35 +608,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Interpretation: The positive slope suggests that counties with higher CES 4.0 scores tend to have higher asthma ED visit rates, indicating a possible link between cumulative environmental/social burden and asthma.</p>
-<section id="county-level-summary-table" class="level4">
-<h4 class="anchored" data-anchor-id="county-level-summary-table">County-level summary table</h4>
-<ul>
-<li><p><strong>Purpose:</strong> Show key county metrics side by side for easy comparison.</p></li>
-<li><p><strong>Interpretation:</strong> Lets you see which counties have both high environmental exposure and high asthma rates. Could help prioritize intervention targets.</p></li>
-</ul>
-<ol start="2" type="a">
-<li><p>Stratified summary table Purpose: Compare asthma rates by poverty level or CES category. Example: Mean asthma ED rate by CES category:</p>
-<p>Interpretation: Shows if high CES or high poverty counties tend to have higher asthma ED rates.</p></li>
-</ol>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 4
-  ces_category mean_ed_rate mean_pm2_5 mean_poverty
-  &lt;chr&gt;               &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;
-1 High                 29.4      10.3          39.5
-2 Low                  20.7       6.73         25.9
-3 Moderate             28.6       7.42         30.9</code></pre>
-</div>
-</div>
-</section>
+<p><strong>Interpretation:</strong> The positive slope suggests that counties with higher CES 4.0 scores tend to have higher asthma ED visit rates, indicating a possible link between cumulative environmental/social burden and asthma.</p>
 </section>
 <section id="plot-2-boxplot-of-asthma-ed-rates-by-ces-category" class="level3">
 <h3 class="anchored" data-anchor-id="plot-2-boxplot-of-asthma-ed-rates-by-ces-category">Plot 2: Boxplot of asthma ED rates by CES category</h3>
-<ul>
-<li><p><strong>Purpose:</strong> Visually compare distributions across “Low,” “Moderate,” and “High” CES counties.</p></li>
-<li><p><strong>Interpretation:</strong> The distribution of asthma ED rates is shifted higher in High CES counties compared to Low CES counties, highlighting disparities in asthma burden across environmental risk levels.</p></li>
-</ul>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -728,6 +621,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<ul>
+<li><strong>Interpretation:</strong> This graph visually compares distributions across “Low,” “Moderate,” and “High” CES counties.The distribution of asthma ED rates is shifted higher in High CES counties compared to Low CES counties, highlighting disparities in asthma burden across environmental risk levels.</li>
+</ul>
 </section>
 <section id="plot-3-asthma-ed-rates-vs.-median-poverty-by-county" class="level3">
 <h3 class="anchored" data-anchor-id="plot-3-asthma-ed-rates-vs.-median-poverty-by-county">Plot 3: Asthma ED Rates vs.&nbsp;Median Poverty by County</h3>
@@ -750,9 +646,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
 <p>The results consistently show that counties with higher cumulative environmental burdens, measured through CES 4.0, also experience higher asthma-related emergency department (ED) visit rates. The correlation analyses and descriptive summaries point in the same direction: as CES scores, pollution indicators, and poverty increase, asthma ED visit rates increase as well.</p>
 <p><br>
-The findings underscore the connections between environmental justice, community conditions, and respiratory health. Counties with higher CES scores are often communities facing structural disadvantage, higher pollution exposure, and fewer protective resources. Higher asthma ED visits in these counties highlights how environment inequities translate into real health consequences. This means for policymakers and public health agencies that interventions aimed at improving asthma outcomes cannot focus solely on clinical care, they also need to address environmental exposures, access to preventive resources, and neighborhood infrastructure.</p>
-<p><br>
-Some limitations may include that these results are based on a county-level aggregate, which reduces local variation&nbsp;</p>
+The findings underscore the connections between environmental justice, community conditions, and respiratory health. Counties with higher CES scores are often communities facing structural disadvantage, higher pollution exposure, and fewer protective resources. Higher asthma ED visits in these counties highlight how environmental inequities translate into real health consequences. This means that, for policymakers and public health agencies, interventions aimed at improving asthma outcomes cannot focus solely on clinical care; they also need to address environmental exposures, access to preventive resources, and neighborhood infrastructure.</p>
+<p>Some limitations to note are that all our results are based on county-level data, which can mask neighborhood-level variation and may overlook communities within a county that experience even higher burdens. Because of this, we can’t make any conclusions about individuals or specific census tracts. There’s also some timing mismatch across the datasets, since the CES indicators and asthma ED data don’t come from the exact same year. And since this is a cross-sectional, descriptive analysis, we can’t say that these environmental burdens <em>cause</em> higher asthma ED rates; we can only describe the patterns we see across counties.</p>
 </section>
 </section>
 
