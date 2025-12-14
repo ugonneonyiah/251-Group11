@@ -276,7 +276,7 @@ We used 3 main sources with 2021 data: CalEnviroScreen tract-level measures (cal
 
 -   This dataset comes the California health and human services asthma emergency department (ED) visit record, which reports county-level counts and rates by year, age group, and race/ethnicity. We wanted to limit the data to align with 2020 and CES 4.0 and this will match our dataset. When apply the clean the data we restricted it to “Total Population” and removed the statewide aggregate “California” to remain only county-level observations. For the county we standardized the “County” suffix, and numeric variable were checked for sentinel missing value, with N/As handled according to documented rules (converted to zero where appropriate). We created ed_visits_per_100k using both the calculated rate (number_of_ed_visits / total_population × 100,000) and the CHHS provided age_adjusted_ed_visit_rate, using age-adjusted rate for the primary analyses to ensure comparability across countries with different age structures. The analytic step generates datasets that makes descriptive summaries of ED counts and rate, merging with CES scores and the environment indicator, producing top 10 county tables, and assessing association through Pearson/Spearman correlation and simple linear regression with coefficients, 95% Cls, and R². With this information we generated scatterplots and boxplots, noting that results represent ecological pattern and may be affected by residual confounding.
 
-## Results 
+## Results
 
 ```{r 1, echo = TRUE}
 # read in and clean all 3 files (reuse from Milestone 3)
@@ -377,7 +377,7 @@ df_combined <- df_combined %>%
 
 ### Plot 1: Asthma vs CES
 
-```{r Angela visual, include = FALSE, warning=FALSE, message=FALSE}
+```{r Angela visual 1, include = FALSE, warning=FALSE, message=FALSE}
 
 ggplot(df_combined, aes(x = mean_ces_4_0_score,
                         y = ed_visits_per_100k)) +
@@ -396,7 +396,7 @@ ggplot(df_combined, aes(x = mean_ces_4_0_score,
 
 Or the below includes county names.
 
-```{r Angela visual, echo = FALSE, warning=FALSE, message=FALSE}
+```{r Angela visual 2, echo = FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
 library(ggrepel)
 
